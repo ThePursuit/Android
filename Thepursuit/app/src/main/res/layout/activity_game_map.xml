@@ -1,0 +1,49 @@
+<RelativeLayout
+    android:layout_height="wrap_content"
+    android:layout_width="fill_parent"
+    android:weightSum="1"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:id="@+id/distanceView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Prey: 100m"
+        android:gravity="center"/>
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+        android:layout_height="match_parent" android:id="@+id/map" tools:context=".MapsActivity"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_below="@+id/distanceView"
+        android:layout_above="@+id/buttonLayout"/>
+
+    <LinearLayout
+        android:id="@+id/buttonLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <Button
+            android:id="@+id/catchButton"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:text="Catch"
+            android:textAllCaps="false"
+            android:layout_alignParentLeft="true" />
+
+        <Button
+            android:id="@+id/talkButton"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:text="Talk"
+            android:textAllCaps="false"
+            android:layout_alignParentRight="true" />
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,9 +1,11 @@
 package com.example.michael.thepursuit;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -42,5 +44,10 @@ public class LobbyActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void playGame(View view){
+        Intent intent = new Intent(this, GameMapActivity.class);
+        startActivity(intent);
     }
 }
