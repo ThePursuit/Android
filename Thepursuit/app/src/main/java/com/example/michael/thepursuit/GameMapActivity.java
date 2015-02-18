@@ -3,6 +3,7 @@ package com.example.michael.thepursuit;
 import android.content.Context;
 import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -13,7 +14,9 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class GameMapActivity extends FragmentActivity {
+import java.util.Calendar;
+
+public class GameMapActivity extends FragmentActivity implements LocationListener {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
@@ -82,23 +85,47 @@ public class GameMapActivity extends FragmentActivity {
         // Get Current Location
         Location myLocation = locationManager.getLastKnownLocation(provider);
 
-        // Set map type
-        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        if(myLocation != null) {
 
-        // Get latitude of the current location
-        double latitude = myLocation.getLatitude();
+            // Set map type
+            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-        // Get longitude of the current location
-        double longitude = myLocation.getLongitude();
+            // Get latitude of the current location
+            double latitude = myLocation.getLatitude();
 
-        // Create a LatLng object for the current location
-        LatLng latLng = new LatLng(latitude, longitude);
+            // Get longitude of the current location
+            double longitude = myLocation.getLongitude();
 
-        // Show the current location in Google Map
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            // Create a LatLng object for the current location
+            LatLng latLng = new LatLng(latitude, longitude);
 
-        // Zoom in the Google Map
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(14));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("You are here!").snippet("Consider yourself located"));
+            // Show the current location in Google Map
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+
+            // Zoom in the Google Map
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(14));
+            mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("You are here!").snippet("Consider yourself located"));
+
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
     }
 }
