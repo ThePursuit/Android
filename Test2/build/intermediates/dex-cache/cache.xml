@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/home/christofer/.gradle/caches/modules-2/files-2.1/com.squareup.okio/okio/1.0.1/39eff75ddcb987ff65888361a29f489c178429a3/okio-1.0.1.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="39eff75ddcb987ff65888361a29f489c178429a3">
+        <dex dex="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/pre-dexed/debug/okio-1.0.1-2d432ca69b096715b7c616904a4727ded8d57e2b.jar" />
+    </item>
+    <item
+        jar="/home/christofer/.gradle/caches/modules-2/files-2.1/com.google.oauth-client/google-oauth-client/1.19.0/d473a8962e14a707a3716637e4898bb2dd9643f2/google-oauth-client-1.19.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="d473a8962e14a707a3716637e4898bb2dd9643f2">
+        <dex dex="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/pre-dexed/debug/google-oauth-client-1.19.0-2b735410a3f423ab8a316ce23ed39ce90e2c27e4.jar" />
+    </item>
+    <item
+        jar="/home/christofer/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/1.3.9/40719ea6961c0cb6afaeb6a921eaa1f6afd4cfdf/jsr305-1.3.9.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="40719ea6961c0cb6afaeb6a921eaa1f6afd4cfdf">
+        <dex dex="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/pre-dexed/debug/jsr305-1.3.9-21f6d186245fc696496ee61fa7aa17de639026dc.jar" />
+    </item>
+    <item
+        jar="/home/christofer/.gradle/caches/modules-2/files-2.1/com.squareup/otto/1.3.5/7941cd2c2c8ec006800d75c35f8a9dacf892ab93/otto-1.3.5.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="7941cd2c2c8ec006800d75c35f8a9dacf892ab93">
+        <dex dex="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/pre-dexed/debug/otto-1.3.5-e9d3fd6442e41fab091b97b34f51881911efef96.jar" />
+    </item>
+    <item
+        jar="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
+        <dex dex="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/pre-dexed/debug/classes-8714a30391d7a460b4130363156453553911062b.jar" />
+    </item>
+    <item
+        jar="/home/christofer/.gradle/caches/modules-2/files-2.1/com.google.http-client/google-http-client-jackson2/1.19.0/81dbf9795d387d5e80e55346582d5f2fb81a42eb/google-http-client-jackson2-1.19.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="81dbf9795d387d5e80e55346582d5f2fb81a42eb">
+        <dex dex="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/pre-dexed/debug/google-http-client-jackson2-1.19.0-e3053a05349b78907e5f9020e6bf0eb8fed45dc5.jar" />
+    </item>
+    <item
+        jar="/home/christofer/Kurser/Kandidat/Appen/Test2/app/libs/bolts-android-1.1.4-javadoc.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="f5dd6492c539679411fa30818320b737c410158f">
+        <dex dex="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/pre-dexed/debug/bolts-android-1.1.4-javadoc-2c637f5b43fea81c13e80529afd325e1c262651c.jar" />
+    </item>
+    <item
+        jar="/home/christofer/Kurser/Kandidat/Appen/Test2/app/libs/Parse-1.8.2.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="c2cb0bfe37cbefd855b6faa3c9a5be833aba7300">
+        <dex dex="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/pre-dexed/debug/Parse-1.8.2-fed439f2e1438f216fef851ce6bede4798556ad0.jar" />
+    </item>
+    <item
+        jar="/home/christofer/Kurser/Kandidat/Appen/Test2/app/libs/ParseCrashReporting-1.8.2.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="ccf9e90414e7bb2cf09f4d7c77c42f70c690e118">
+        <dex dex="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/pre-dexed/debug/ParseCrashReporting-1.8.2-0c06cbeb7aae0bd46d984dbcc2102d1163b1b24e.jar" />
+    </item>
+    <item
+        jar="/home/christofer/.gradle/caches/modules-2/files-2.1/com.google.http-client/google-http-client/1.19.0/cdca49ad0977c040f603478aa2e16b2775c8fec6/google-http-client-1.19.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="cdca49ad0977c040f603478aa2e16b2775c8fec6">
+        <dex dex="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/pre-dexed/debug/google-http-client-1.19.0-d4ce8bc9985380224b2dc8bae334786b65b30eee.jar" />
+    </item>
+    <item
+        jar="/home/christofer/.gradle/caches/modules-2/files-2.1/com.squareup.okhttp/okhttp-urlconnection/2.0.0/afe8399d352713b66e597e9670c741d1e60ae923/okhttp-urlconnection-2.0.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="afe8399d352713b66e597e9670c741d1e60ae923">
+        <dex dex="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/pre-dexed/debug/okhttp-urlconnection-2.0.0-b9af054205baa16f694f844448a584801017896f.jar" />
+    </item>
+    <item
+        jar="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/21.0.3/classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="4b8945fc23a7461c6fdde15753456d64b0a9358b">
+        <dex dex="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/pre-dexed/debug/classes-ac413152bd6ce8defc973687e5ac0c6fea5eee1b.jar" />
+    </item>
+    <item
+        jar="/home/christofer/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.2.4/906cf5deb56ec1fb3ecbeceb08a1734ce9fed664/jackson-databind-2.2.4.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="906cf5deb56ec1fb3ecbeceb08a1734ce9fed664">
+        <dex dex="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/pre-dexed/debug/jackson-databind-2.2.4-9c11024f90bbdc7d55711707cc32ebfc5c4fbab5.jar" />
+    </item>
+    <item
+        jar="/home/christofer/.gradle/caches/modules-2/files-2.1/com.parse.bolts/bolts-android/1.1.4/129874135e6081269ace2312092031558865de12/bolts-android-1.1.4.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="129874135e6081269ace2312092031558865de12">
+        <dex dex="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/pre-dexed/debug/bolts-android-1.1.4-565ce11277359f8230412e9c9aedb8e5b0982578.jar" />
+    </item>
+    <item
+        jar="/home/christofer/.gradle/caches/modules-2/files-2.1/com.google.api-client/google-api-client-android/1.19.1/551253c681cfd8ab4d988462cf672abcc6b31b89/google-api-client-android-1.19.1.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="551253c681cfd8ab4d988462cf672abcc6b31b89">
+        <dex dex="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/pre-dexed/debug/google-api-client-android-1.19.1-0dc4af9ac1413758bbeafc30210108c5c3b58e87.jar" />
+    </item>
+    <item
+        jar="/opt/Android/Sdk/extras/android/m2repository/com/android/support/support-annotations/21.0.3/support-annotations-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
+        <dex dex="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/pre-dexed/debug/support-annotations-21.0.3-d044b7b0361083cf5a1bef016f0fd772e00d7de4.jar" />
+    </item>
+    <item
+        jar="/home/christofer/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.2.4/95705b2e89a4101f2a82af6b303945755d7f93ab/jackson-core-2.2.4.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="95705b2e89a4101f2a82af6b303945755d7f93ab">
+        <dex dex="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/pre-dexed/debug/jackson-core-2.2.4-53e41ea9538852027acf11a102cd9d102fbd8db1.jar" />
+    </item>
+    <item
+        jar="/home/christofer/.gradle/caches/modules-2/files-2.1/com.squareup.okhttp/okhttp/2.0.0/4c8d1536dba3812cc1592090dc20c47a4ed3c35e/okhttp-2.0.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="4c8d1536dba3812cc1592090dc20c47a4ed3c35e">
+        <dex dex="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/pre-dexed/debug/okhttp-2.0.0-abf7ea64e3106936950832d4fe5c9dad49cfa608.jar" />
+    </item>
+    <item
+        jar="/home/christofer/.gradle/caches/modules-2/files-2.1/com.google.http-client/google-http-client-android/1.19.0/e3f11020c2c812112803d252d1392872d3f619c8/google-http-client-android-1.19.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="e3f11020c2c812112803d252d1392872d3f619c8">
+        <dex dex="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/pre-dexed/debug/google-http-client-android-1.19.0-9106fec3696e07fa0bd530f4c9a7301a38c57a73.jar" />
+    </item>
+    <item
+        jar="/home/christofer/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.3/5fc52c41ef0239d1093a1eb7c3697036183677ce/gson-2.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="5fc52c41ef0239d1093a1eb7c3697036183677ce">
+        <dex dex="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/pre-dexed/debug/gson-2.3-c5afae23cf213baf7be4b7886d11fa49d5d6dded.jar" />
+    </item>
+    <item
+        jar="/home/christofer/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.2.4/9de62c96bb3e17eb909c107f2759c73650b5a8f1/jackson-annotations-2.2.4.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="9de62c96bb3e17eb909c107f2759c73650b5a8f1">
+        <dex dex="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/pre-dexed/debug/jackson-annotations-2.2.4-79f6a360883a1201c4b7071fe1f2e07a09cb66d5.jar" />
+    </item>
+    <item
+        jar="/home/christofer/.gradle/caches/modules-2/files-2.1/com.squareup.retrofit/retrofit/1.8.0/a517f29ed06be2b2879524fcd94b6e9b36e2e0b5/retrofit-1.8.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="a517f29ed06be2b2879524fcd94b6e9b36e2e0b5">
+        <dex dex="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/pre-dexed/debug/retrofit-1.8.0-a6b01942808548f73ec41c2b92f428eb3b15dace.jar" />
+    </item>
+    <item
+        jar="/home/christofer/.gradle/caches/modules-2/files-2.1/com.google.api-client/google-api-client/1.19.1/b09ccfa9ac71b52b60ba4c1ab630150685d58c32/google-api-client-1.19.1.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="b09ccfa9ac71b52b60ba4c1ab630150685d58c32">
+        <dex dex="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/pre-dexed/debug/google-api-client-1.19.1-fd63055b3e13eb5f2664b319ecfa4082eaf0b6e9.jar" />
+    </item>
+    <item
+        jar="/home/christofer/.gradle/caches/modules-2/files-2.1/com.jakewharton/butterknife/6.0.0/3a10b25b6820e19102e118711afe6a66c0bae123/butterknife-6.0.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="3a10b25b6820e19102e118711afe6a66c0bae123">
+        <dex dex="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/pre-dexed/debug/butterknife-6.0.0-7d9bd3015938ca47158a42e5feb6b6bf904882ba.jar" />
+    </item>
+    <item
+        jar="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/libs/internal_impl-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
+        <dex dex="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/pre-dexed/debug/internal_impl-21.0.3-00573049f55ba80a10514e5d17fe7c9f40bd9963.jar" />
+    </item>
+    <item
+        jar="/home/christofer/.gradle/caches/modules-2/files-2.1/com.google.guava/guava-jdk5/13.0/381ae6c8add7c98e9bcddb1e0b898400cd6fc3f7/guava-jdk5-13.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="381ae6c8add7c98e9bcddb1e0b898400cd6fc3f7">
+        <dex dex="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/pre-dexed/debug/guava-jdk5-13.0-c74d6a36989c1c5035658c460d2a5baa6fdfce01.jar" />
+    </item>
+    <item
+        jar="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="81d42bf983a8741f4888a6e333e454e4a5e0eeb7">
+        <dex dex="/home/christofer/Kurser/Kandidat/Appen/Test2/app/build/intermediates/pre-dexed/debug/classes-8eeb263c8cd49c144bbec4572904fe40c32885ad.jar" />
+    </item>
+
+</items>
