@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+
 
 public class LobbyActivity extends ActionBarActivity {
 
@@ -16,9 +18,10 @@ public class LobbyActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
-        String[] players = {"Andrea", "Cenny", "Christoffer", "Michael", "Michael", "Michael", "Michael", "Michael", "Michael", "Michael"};
+        //ArrayList<String> player = new ArrayList<>();
+        //String[] players = {"Andrea", "Cenny", "Christoffer", "Michael", "Michael", "Michael", "Michael", "Michael", "Michael", "Michael"};
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, players);
+                android.R.layout.simple_list_item_1, JoinGameActivity.players);
         ListView listView = (ListView) findViewById(R.id.listView);
         listView.setAdapter(adapter);
     }

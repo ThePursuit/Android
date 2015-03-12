@@ -6,9 +6,22 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 
 public class JoinGameActivity extends ActionBarActivity {
+
+    public static ArrayList<String> players;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +53,21 @@ public class JoinGameActivity extends ActionBarActivity {
     }
 
     public void joinButton(View view){
+        players = new ArrayList<>();
+        HashMap<String, Object> request = new HashMap<>();
+        EditText text = (EditText) findViewById(R.id.gameCode);
+        String gameCode = text.getText().toString();
+        request.put("gameID", gameCode);
+        ParseCloud.callFunctionInBackground("joinGame", request, new FunctionCallback<List<ParseObject>>() {
+            public void done(List<ParseObject> result, ParseException e) {
+                if (e == null) {
+                    for (ParseObject po : result){
+                        players.add(po.getString("playerID"));
+                    }
+                }
+            }
+        });
+
         Intent intent = new Intent(this, LobbyActivity.class);
         startActivity(intent);
     }

@@ -37,4 +37,15 @@
         android:layout_alignLeft="@+id/createButton"
         android:layout_alignStart="@+id/createButton" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button2"
+        android:layout_above="@+id/createButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="48dp"
+        android:text="Hello Parse!"
+        android:onClick="helloParse"
+        android:textAllCaps="false"/>
+
 </RelativeLayout>

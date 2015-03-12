@@ -6,6 +6,13 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
+
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
+import com.parse.ParseException;
+
+import java.util.HashMap;
 
 
 public class StartActivity extends ActionBarActivity {
@@ -51,6 +58,20 @@ public class StartActivity extends ActionBarActivity {
         Intent intent = new Intent(this, JoinGameActivity.class);
         startActivity(intent);
 
+    }
+
+    public void helloParse(View view){
+        HashMap<String, Object> request = new HashMap<>();
+        request.put("firstName", "Michael");
+        request.put("lastName", "Tran");
+        ParseCloud.callFunctionInBackground("hello", request, new FunctionCallback<String>() {
+            public void done(String result, ParseException e) {
+                if (e == null) {
+                    TextView t = (TextView) findViewById(R.id.textView);
+                    t.setText(result);
+                }
+            }
+        });
     }
 
 }
