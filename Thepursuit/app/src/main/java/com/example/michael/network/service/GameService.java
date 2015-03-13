@@ -22,9 +22,11 @@ public class GameService {
         this.eventBus = eventBus;
     }
 
+    /*
     public void onFetchPosition(Coordinate pos){
         ParseCloud.callFunctionInBackground("hello", pos.getPosJson(), ON_FETCH_POSITION_CALLBACK);
     }
+    */
     public void onCreatePlayers(HashMap<String,Object> hash){
         ParseCloud.callFunctionInBackground("createPlayer", hash, ON_FETCH_POSITION_CALLBACK);
     }

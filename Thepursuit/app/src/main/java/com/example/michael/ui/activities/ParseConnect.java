@@ -1,4 +1,4 @@
-package com.example.michael.network.service;
+package com.example.michael.ui.activities;
 
 import android.app.Application;
 
@@ -26,7 +26,7 @@ public class ParseConnect extends Application {
         Parse.enableLocalDatastore(this);
 
         // Add your initialization code here
-        Parse.initialize(this, "slYpk2d7SWUIKJsidwMebpntYrEtvtC120lSu4AJ", "D5NG4bZ6aLX4Tre5uh2cJn2hIg93DeYGfHjRVbVe");
+        Parse.initialize(this, "rShXzUyvjlzHIXxJMlN8LIoQqVilA9CcCY3Ml5kU", "7WzFNhAwoYWo9Vt4W5zC9bgXLSyAqmCzWOmwGjT2");
 /*
         ParseObject testObject = new ParseObject("TestObject");
         testObject.put("foo", "bar");
