@@ -7,8 +7,8 @@
     tools:context="com.example.michael.ui.activities.JoinGameActivity">
 
     <EditText
-        android:layout_width="0dp"
-        android:layout_weight="6.02"
+        android:layout_width="0"
+        android:layout_weight="1"
         android:layout_height="wrap_content"
         android:id="@+id/gameCode"
         android:hint="Enter game code"
@@ -16,7 +16,7 @@
         android:layout_gravity="center_vertical" />
 
     <EditText
-        android:layout_width="wrap_content"
+        android:layout_width="0"
         android:layout_weight="1"
         android:layout_height="wrap_content"
         android:id="@+id/playerName"
