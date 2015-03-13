@@ -34,18 +34,25 @@
         android:id="@+id/joinButton"
         android:onClick="joinGame"
         android:layout_below="@+id/createButton"
-        android:layout_alignLeft="@+id/createButton"
         android:layout_alignStart="@+id/createButton" />
 
     <Button
+        android:layout_width="150dp"
+        android:layout_height="70dp"
+        android:textAllCaps="false"
+        android:text="Hello"
+        android:id="@+id/greetingButton"
+        android:onClick="joinGame"
+        android:layout_below="@+id/joinButton"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/button2"
-        android:layout_above="@+id/createButton"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="48dp"
-        android:text="Hello Parse!"
-        android:onClick="helloParse"
-        android:textAllCaps="false"/>
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Text"
+        android:id="@+id/textView5"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.michael.thepursuit" >
+    package="com.example.michael.ui" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -14,13 +14,12 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
-        android:name=".ParseConnect"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".StartActivity"
+            android:name=".activities.StartActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,15 +28,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".CreateGameActivity"
+            android:name=".activities.CreateGameActivity"
             android:label="@string/title_activity_create_game" >
         </activity>
         <activity
-            android:name=".JoinGameActivity"
+            android:name=".activities.JoinGameActivity"
             android:label="@string/title_activity_join_game" >
         </activity>
         <activity
-            android:name=".LobbyActivity"
+            android:name=".activities.LobbyActivity"
             android:label="@string/title_activity_lobby" >
         </activity>
 
@@ -49,10 +48,9 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".GameMapActivity"
+            android:name=".activities.GameMapActivity"
             android:label="@string/title_activity_game_map" >
         </activity>
-
     </application>
 
 </manifest>
