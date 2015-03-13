@@ -1,11 +1,13 @@
 package com.example.michael.model.position;
 
+import com.parse.ParseObject;
+
 import java.util.HashMap;
 
 /**
  * Created by christofer on 3/6/15.
  */
-public class Player {
+public class Player extends ParseObject {
     private HashMap<String, Object> player = new HashMap<>();
     private Coordinate coordinate = new Coordinate();
 

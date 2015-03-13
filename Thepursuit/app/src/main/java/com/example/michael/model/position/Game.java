@@ -1,6 +1,7 @@
 package com.example.michael.model.position;
 
 import com.parse.ParseObject;
+import com.parse.ParseRelation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,19 +10,21 @@ import java.util.List;
  * Created by christofer on 3/6/15.
  */
 public class Game {
-    private static ArrayList<ParseObject> players = new ArrayList<>();
+    private static ParseRelation<ParseObject> players;
     private Rules rules = new Rules();
     private State state = new State();
 
-    public Game(List<ParseObject> state){
-        players = new ArrayList<>(state);
+
+    public Game(ParseObject state){
+        players = state.getRelation("players");
     }
 
-    public static void setPlayers(List<ParseObject> newGameState){
-        players = new ArrayList<>(newGameState);
+
+    public static void setPlayers(ParseObject newGameState){
+        players = newGameState.getRelation("players");
     }
 
-    public static ArrayList<ParseObject> getPlayers(){
+    public static ParseRelation<ParseObject> getPlayers(){
         return players;
     }
 }

@@ -11,9 +11,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.michael.model.position.Game;
+import com.example.michael.model.position.Player;
 import com.example.michael.network.provider.BusProvider;
 import com.example.michael.network.provider.ServiceProvider;
 import com.example.michael.ui.R;
+import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.squareup.otto.Subscribe;
 
@@ -75,8 +77,12 @@ public class LobbyActivity extends ActionBarActivity {
     public void derp(Game test) {
         ArrayList<String> players = new ArrayList<>();
 
-        for(ParseObject player : test.getPlayers()){
-           players.add(player.get("playerID").toString());
+        try {
+            for(ParseObject player : test.getPlayers().getQuery().find()){
+               players.add(player.get("playerID").toString());
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,

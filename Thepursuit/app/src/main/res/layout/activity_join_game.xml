@@ -7,16 +7,17 @@
     tools:context="com.example.michael.ui.activities.JoinGameActivity">
 
     <EditText
-        android:layout_width="0"
+        android:layout_width="wrap_content"
         android:layout_weight="1"
         android:layout_height="wrap_content"
         android:id="@+id/gameCode"
         android:hint="Enter game code"
         android:gravity="center"
-        android:layout_gravity="center_vertical" />
+        android:layout_gravity="center_vertical"
+        android:layout_below="@+id/playerName"/>
 
     <EditText
-        android:layout_width="0"
+        android:layout_width="wrap_content"
         android:layout_weight="1"
         android:layout_height="wrap_content"
         android:id="@+id/playerName"
@@ -30,7 +31,7 @@
         android:text="Join"
         android:id="@+id/joinButton"
         android:textAllCaps="false"
-        android:layout_gravity="center_vertical"
+        android:layout_gravity="bottom"
         android:onClick="joinButton"/>
 
 </LinearLayout>

@@ -34,12 +34,12 @@ public class GameService {
         ParseCloud.callFunctionInBackground("joinGame", s, testar);
     }
 
-    private final FunctionCallback<List<ParseObject>> testar = new FunctionCallback<List<ParseObject>>() {
+    private final FunctionCallback<ParseObject> testar = new FunctionCallback<ParseObject>() {
 
         @Override
-        public void done(List<ParseObject> parseObjects, ParseException e) {
+        public void done(ParseObject parseObject, ParseException e) {
             if(e == null) {
-                eventBus.post(new Game(parseObjects));
+                eventBus.post(new Game(parseObject));
             }
             else
                 eventBus.post(e);
