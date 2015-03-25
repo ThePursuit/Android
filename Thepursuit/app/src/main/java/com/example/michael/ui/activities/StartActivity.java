@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.michael.network.provider.BusProvider;
+import com.example.michael.network.provider.ServiceProvider;
 import com.example.michael.ui.R;
 import com.parse.Parse;
 import com.parse.ParseException;
@@ -64,11 +65,11 @@ public class StartActivity extends ActionBarActivity {
     public void createGame(View view){
         Intent intent = new Intent(this, CreateGameActivity.class);
         startActivity(intent);
-
     }
 
     public void joinGame(View view){
         Intent intent = new Intent(this, JoinGameActivity.class);
+        ServiceProvider.getPositionService().onCreatePlayer();
         startActivity(intent);
 
     }
@@ -82,50 +83,6 @@ public class StartActivity extends ActionBarActivity {
     public void onPause(){
         super.onPause();
         BusProvider.getBus().unregister(this);
-    }
-
-    @Subscribe
-    public void onFetchPositionSuccess(String s){
-        text.setText(s);
-    }
-
-    @Subscribe
-    public void onFetchPositionFailed(ParseException event){
-        Toast.makeText(this, "Failed to get game", Toast.LENGTH_LONG).show();
-        text.setText(event.toString());
-    }
-    @Subscribe
-    public void onTest(ArrayList<ParseObject> derp){
-        String lista = "";
-        for(ParseObject i : derp){
-            lista += i.get("playerID") + " ";
-        }
-        text.setText(lista);
-    }
-
-    @OnClick(R.id.greetingButton)
-    public void sayHi(){
-        HashMap<String,String> join = new HashMap<>();
-        join.put("gameID", "123");
-        join.put("playerID", "p4");
-        //ServiceProvider.getPositionService().onJoinGame(join);
-        /*
-        //Create 3 players
-        HashMap<String,Object> p1 = new HashMap<>();
-        p1.put("playerID", "p1");
-        p1.put("playerColor","blue");
-        HashMap<String,Object> p2 = new HashMap<>();
-        p2.put("playerID", "p2");
-        p2.put("playerColor","green");
-        HashMap<String,Object> p3 = new HashMap<>();
-        p3.put("playerID", "p3");
-        p3.put("playerColor","yellow");
-
-        ServiceProvider.getPositionService().onCreatePlayers(p1);
-        ServiceProvider.getPositionService().onCreatePlayers(p2);
-        ServiceProvider.getPositionService().onCreatePlayers(p3);
-        */
-        //ServiceProvider.getPositionService().onFetchPosition(new Position("derp"));
     }
 
 }

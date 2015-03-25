@@ -12,6 +12,15 @@ public class Player extends ParseObject {
     private HashMap<String, Object> player = new HashMap<>();
 
 
+    public Player(ParseObject parseObject){
+        player.put("objectID", parseObject.get("objectID"));
+        //player.put("gameID", parseObject.get("gameID")); //remove later on
+        player.put("playerID", parseObject.get("playerID"));
+        player.put("isPrey", parseObject.get("isPrey"));
+        player.put("playerColor", parseObject.get("playerColor"));
+        player.put("isReady", parseObject.get("isReady"));
+        player.put("location", parseObject.get("location"));
+    }
 
     public Player(String gameID, String playerID, boolean isPrey, String playerColor, boolean isReady, ParseGeoPoint location){
         player.put("gameID", gameID); //remove later on

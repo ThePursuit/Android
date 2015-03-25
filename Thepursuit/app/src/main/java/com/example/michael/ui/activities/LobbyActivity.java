@@ -35,7 +35,7 @@ public class LobbyActivity extends ActionBarActivity {
         ButterKnife.inject(this);
         setGameIdHeader();
         if(this.getIntent().getAction().equals("joinGame")){
-            ServiceProvider.getPositionService().onJoinGame(JoinGameActivity.getJoin());
+            //ServiceProvider.getPositionService().onJoinGame(JoinGameActivity.getJoin());
         } else if(this.getIntent().getAction().equals("createGame")){
             //ugly test for now
             ServiceProvider.getPositionService().onCreateGame(JoinGameActivity.getJoin());
@@ -88,6 +88,8 @@ public class LobbyActivity extends ActionBarActivity {
             e.printStackTrace();
         }
 
+        lobbyGameCodeView.setText("Game code: " + test.getGame().get("gameID").toString());
+
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                                        android.R.layout.simple_list_item_1, players);
         ListView listView = (ListView) findViewById(R.id.listView);
@@ -100,6 +102,7 @@ public class LobbyActivity extends ActionBarActivity {
         startActivity(intent);
     }
     private void setGameIdHeader(){
-        lobbyGameCodeView.setText("Game code: " + JoinGameActivity.getJoin().get("gameID"));
+
+
     }
 }

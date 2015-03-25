@@ -1,6 +1,7 @@
 package com.example.michael.network.service;
 
 import com.example.michael.model.game.Game;
+import com.example.michael.model.game.Player;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -21,33 +22,40 @@ public class GameService {
         this.eventBus = eventBus;
     }
 
-    /*
-    public void onFetchPosition(Coordinate pos){
-        ParseCloud.callFunctionInBackground("hello", pos.getPosJson(), ON_FETCH_POSITION_CALLBACK);
-    }
-
-    public void onCreatePlayers(HashMap<String, Object> hash){
-        ParseCloud.callFunctionInBackground("createPlayer", hash, ON_FETCH_POSITION_CALLBACK);
-    }
-    */
-
     public void onCreateGame(HashMap<String, String> rules){
-        ParseCloud.callFunctionInBackground("createGame", rules, testar);
+        ParseCloud.callFunctionInBackground("createGame", rules, GAME_CALLBACK);
     }
 
-    public void onJoinGame(HashMap<String, String> s){
-        ParseCloud.callFunctionInBackground("joinGame", s, testar);
+    public void onJoinGame(HashMap<String, Object> s){
+        ParseCloud.callFunctionInBackground("joinGame", s, GAME_CALLBACK);
     }
+
+    public void onCreatePlayer(){
+        ParseCloud.callFunctionInBackground("createPlayer", new HashMap<String, Object>(), PLAYER_CALLBACK);
+    }
+
     public void onUpdateGame(HashMap<String, Object> game){
-        ParseCloud.callFunctionInBackground("updateGame", game, testar);
+        ParseCloud.callFunctionInBackground("updateGame", game, GAME_CALLBACK);
     }
 
-    private final FunctionCallback<ParseObject> testar = new FunctionCallback<ParseObject>() {
+    private final FunctionCallback<ParseObject> GAME_CALLBACK = new FunctionCallback<ParseObject>() {
 
         @Override
         public void done(ParseObject parseObject, ParseException e) {
             if(e == null) {
                 eventBus.post(new Game(parseObject));
+            }
+            else
+                eventBus.post(e);
+        }
+    };
+
+    private final FunctionCallback<ParseObject> PLAYER_CALLBACK = new FunctionCallback<ParseObject>() {
+
+        @Override
+        public void done(ParseObject parseObject, ParseException e) {
+            if(e == null) {
+                eventBus.post(new Player(parseObject));
             }
             else
                 eventBus.post(e);

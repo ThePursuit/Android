@@ -35,8 +35,8 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_map);
         setUpMapIfNeeded();
-        Player p1 = new Player("cg3q", JoinGameActivity.getJoin().get("playerID"), false, "clor", false, new ParseGeoPoint(latitude, longitude));
-        ServiceProvider.getPositionService().onUpdateGame(p1.getPlayer());
+        //Player p1 = new Player(, JoinGameActivity.getJoin().get("playerID"), false, "clor", false, new ParseGeoPoint(latitude, longitude));
+        //ServiceProvider.getPositionService().onUpdateGame();
     }
 
     @Override
