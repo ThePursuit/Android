@@ -8,8 +8,8 @@ import com.parse.ParseRelation;
  */
 public class Game {
     private static ParseRelation<ParseObject> players;
-    private Rules rules = new Rules();
-    private State state = new State();
+    //private Rules rules = new Rules();
+    //private State state = new State();
 
 
     public Game(ParseObject state){
