@@ -98,6 +98,8 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
             // Create a LatLng object for the current location
             LatLng latLng = new LatLng(latitude, longitude);
 
+
+
             // Show the current location in Google Map
             mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
