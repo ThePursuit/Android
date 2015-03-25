@@ -1,4 +1,4 @@
-package com.example.michael.model.position;
+package com.example.michael.model.game;
 
 /**
  * Created by christofer on 3/11/15.

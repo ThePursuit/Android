@@ -1,4 +1,4 @@
-package com.example.michael.model.position;
+package com.example.michael.model.game;
 
 import com.parse.ParseObject;
 

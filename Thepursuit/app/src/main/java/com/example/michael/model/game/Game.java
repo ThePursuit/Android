@@ -1,10 +1,7 @@
-package com.example.michael.model.position;
+package com.example.michael.model.game;
 
 import com.parse.ParseObject;
 import com.parse.ParseRelation;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by christofer on 3/6/15.
