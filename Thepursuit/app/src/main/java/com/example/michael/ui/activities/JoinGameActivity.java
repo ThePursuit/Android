@@ -6,22 +6,18 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 
-import com.example.michael.network.provider.ServiceProvider;
 import com.example.michael.ui.R;
 
 import java.util.HashMap;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnClick;
 
 
 public class JoinGameActivity extends ActionBarActivity {
 
-    @InjectView(R.id.joinButton) Button joinButton;
     @InjectView(R.id.playerName) EditText playerName;
     @InjectView(R.id.gameCode) EditText gameCode;
 
@@ -35,7 +31,6 @@ public class JoinGameActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_game);
-
         ButterKnife.inject(this);
     }
 
@@ -69,6 +64,7 @@ public class JoinGameActivity extends ActionBarActivity {
         join.put("playerID", playerName.getText().toString());
 
         Intent intent = new Intent(this, LobbyActivity.class);
+        intent.setAction("joinGame");
         startActivity(intent);
     }
 }

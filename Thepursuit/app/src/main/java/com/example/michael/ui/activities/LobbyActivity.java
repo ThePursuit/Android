@@ -11,7 +11,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.michael.model.position.Game;
-import com.example.michael.model.position.Player;
 import com.example.michael.network.provider.BusProvider;
 import com.example.michael.network.provider.ServiceProvider;
 import com.example.michael.ui.R;
@@ -34,10 +33,14 @@ public class LobbyActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
         ButterKnife.inject(this);
-
         setGameIdHeader();
+        if(this.getIntent().getAction().equals("joinGame")){
+            ServiceProvider.getPositionService().onJoinGame(JoinGameActivity.getJoin());
+        } else if(this.getIntent().getAction().equals("createGame")){
+            //ugly test for now
+            ServiceProvider.getPositionService().onCreateGame(JoinGameActivity.getJoin());
+        }
 
-        ServiceProvider.getPositionService().onJoinGame(JoinGameActivity.getJoin());
     }
 
 

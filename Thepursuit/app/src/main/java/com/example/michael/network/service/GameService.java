@@ -27,10 +27,15 @@ public class GameService {
         ParseCloud.callFunctionInBackground("hello", pos.getPosJson(), ON_FETCH_POSITION_CALLBACK);
     }
     */
-    public void onCreatePlayers(HashMap<String,Object> hash){
+    public void onCreatePlayers(HashMap<String, Object> hash){
         ParseCloud.callFunctionInBackground("createPlayer", hash, ON_FETCH_POSITION_CALLBACK);
     }
-    public void onJoinGame(HashMap<String,String> s){
+
+    public void onCreateGame(HashMap<String, String> rules){
+        ParseCloud.callFunctionInBackground("createGame", rules, testar);
+    }
+
+    public void onJoinGame(HashMap<String, String> s){
         ParseCloud.callFunctionInBackground("joinGame", s, testar);
     }
 

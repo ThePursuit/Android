@@ -43,6 +43,7 @@ public class CreateGameActivity extends ActionBarActivity {
 
     public void createGameButton(View view){
         Intent intent = new Intent(this, LobbyActivity.class);
+        intent.setAction("createGame");
         startActivity(intent);
     }
 }
