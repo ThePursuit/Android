@@ -10,7 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.michael.model.position.Game;
+import com.example.michael.model.game.Game;
 import com.example.michael.network.provider.BusProvider;
 import com.example.michael.network.provider.ServiceProvider;
 import com.example.michael.ui.R;
