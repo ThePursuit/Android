@@ -1,7 +1,6 @@
 package com.example.michael.network.service;
 
-import com.example.michael.model.position.Coordinate;
-import com.example.michael.model.position.Game;
+import com.example.michael.model.game.Game;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
