@@ -8,28 +8,48 @@ import android.location.LocationManager;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
+import com.example.michael.model.game.Game;
+import com.example.michael.model.game.Player;
+import com.example.michael.network.provider.BusProvider;
+import com.example.michael.network.provider.ServiceProvider;
 import com.example.michael.ui.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
+import com.parse.ParseObject;
+import com.squareup.otto.Subscribe;
+
+import java.util.ArrayList;
 
 public class GameMapActivity extends FragmentActivity implements LocationListener {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    private double latitude, longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_map);
         setUpMapIfNeeded();
+        Player p1 = new Player("cg3q", JoinGameActivity.getJoin().get("playerID"), false, "clor", false, new ParseGeoPoint(latitude, longitude));
+        ServiceProvider.getPositionService().onUpdateGame(p1.getPlayer());
     }
 
     @Override
-    protected void onResume() {
+    public void onResume(){
         super.onResume();
         setUpMapIfNeeded();
+        BusProvider.getBus().register(this);
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        BusProvider.getBus().unregister(this);
     }
 
     /**
@@ -58,6 +78,20 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
                 setUpMap();
             }
         }
+    }
+
+    @Subscribe
+    public void updateGame(Game game){
+        ArrayList<ParseGeoPoint> locations = new ArrayList<>();
+        try {
+            for(ParseObject player : game.getPlayers().getQuery().find()){
+                ParseGeoPoint loc = (ParseGeoPoint) player.get("location");
+                mMap.addMarker(new MarkerOptions().position(new LatLng(loc.getLatitude(), loc.getLongitude())).title(player.get("playerID").toString()).snippet("Consider yourself located"));
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
     }
 
     /**
@@ -90,15 +124,13 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
             mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
             // Get latitude of the current location
-            double latitude = myLocation.getLatitude();
+            latitude = myLocation.getLatitude();
 
             // Get longitude of the current location
-            double longitude = myLocation.getLongitude();
+            longitude = myLocation.getLongitude();
 
             // Create a LatLng object for the current location
             LatLng latLng = new LatLng(latitude, longitude);
-
-
 
             // Show the current location in Google Map
             mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));

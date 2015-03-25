@@ -11,6 +11,8 @@ import java.util.HashMap;
 public class Player extends ParseObject {
     private HashMap<String, Object> player = new HashMap<>();
 
+
+
     public Player(String gameID, String playerID, boolean isPrey, String playerColor, boolean isReady, ParseGeoPoint location){
         player.put("gameID", gameID); //remove later on
         player.put("playerID", playerID);
