@@ -1,43 +1,27 @@
 package com.example.michael.ui.activities;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.michael.network.provider.BusProvider;
-import com.example.michael.network.provider.ServiceProvider;
 import com.example.michael.ui.R;
-import com.parse.Parse;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
-import com.squareup.otto.Subscribe;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-
-import butterknife.ButterKnife;
-import butterknife.InjectView;
-import butterknife.OnClick;
 
 
 public class StartActivity extends ActionBarActivity {
-
-    //initiering av UI-objekt i butterknife
-    @InjectView(R.id.textView5) TextView text;
-    @InjectView(R.id.greetingButton) Button greetingButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-
-        ButterKnife.inject(this);
     }
 
     @Override
@@ -62,17 +46,31 @@ public class StartActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void createGame(View view){
+    public void createGame(View view) {
         Intent intent = new Intent(this, CreateGameActivity.class);
         startActivity(intent);
     }
 
-    public void joinGame(View view){
-        Intent intent = new Intent(this, JoinGameActivity.class);
-        ServiceProvider.getPositionService().onCreatePlayer();
-        startActivity(intent);
+    public void joinGame(View view) {
+
+        ParseCloud.callFunctionInBackground("createPlayer", new HashMap<String, Object>(), new FunctionCallback<String>() {
+            public void done(String playerObjID, ParseException e) {
+                if (e == null) {
+                    Intent intent = new Intent(StartActivity.this, JoinGameActivity.class);
+                    intent.putExtra("playerObjID", playerObjID);
+                    startActivity(intent);
+                } else{
+                    //TODO: Implement error notification/window about failing to create player/internet connection?
+                }
+            }
+        });
+
 
     }
+
+    /*
+     * Without Bus for now, maybe remove later on?
+     *
     @Override
     public void onResume(){
         super.onResume();
@@ -84,5 +82,5 @@ public class StartActivity extends ActionBarActivity {
         super.onPause();
         BusProvider.getBus().unregister(this);
     }
-
+    */
 }

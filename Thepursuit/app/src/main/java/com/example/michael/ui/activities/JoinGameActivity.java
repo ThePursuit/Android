@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.michael.model.game.Game;
 import com.example.michael.model.game.Player;
@@ -19,6 +20,7 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.squareup.otto.Subscribe;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import butterknife.ButterKnife;
@@ -27,15 +29,8 @@ import butterknife.InjectView;
 
 public class JoinGameActivity extends ActionBarActivity {
 
-    @InjectView(R.id.playerName) EditText playerName;
+    //@InjectView(R.id.playerName) EditText playerName;
     @InjectView(R.id.gameCode) EditText gameCode;
-
-    private static HashMap<String,String> join = new HashMap<>();
-    private Player player;
-
-    public static HashMap<String,String> getJoin(){
-        return join;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,13 +62,10 @@ public class JoinGameActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Subscribe
-    public void onGetPlayer(Player p){
-        this.player = p;
-    }
-
+    /*
     @Override
     public void onResume(){
+        //TODO: Delete Player object from server Database when touching resume button (hardware)?
         super.onResume();
         BusProvider.getBus().register(this);
     }
@@ -83,24 +75,36 @@ public class JoinGameActivity extends ActionBarActivity {
         super.onPause();
         BusProvider.getBus().unregister(this);
     }
+    */
 
  //   @OnClick(R.id.joinButton)
     public void joinButton(View view){
+        HashMap<String, Object> joinInfo = new HashMap<>();
+        joinInfo.put("playerObjID", getIntent().getStringExtra("playerObjID"));
+        joinInfo.put("gameID", gameCode.getText().toString());
 
-        //join.put("playerID", playerName.getText().toString());
-        player.put("gameID", gameCode.getText().toString());
-        Intent intent = new Intent(this, LobbyActivity.class);
-        intent.setAction("joinGame");
-        //ServiceProvider.getPositionService().onJoinGame(player.getPlayer());
-        ParseCloud.callFunctionInBackground("joinGame", player.getPlayer(), new FunctionCallback<ParseObject>() {
-            public void done(ParseObject parseObject, ParseException e) {
+        ParseCloud.callFunctionInBackground("joinGame", joinInfo, new FunctionCallback<ParseObject>() {
+            public void done(ParseObject game, ParseException e) {
+                ArrayList<String> players = new ArrayList<>();
                 if (e == null) {
-                    
-                } else{
-
+                    try {
+                        for (ParseObject player : game.getRelation("players").getQuery().find()) {
+                            players.add(player.get("playerID").toString());
+                        }
+                        Intent intent = new Intent(JoinGameActivity.this, LobbyActivity.class);
+                        intent.putStringArrayListExtra("players", players);
+                        intent.putExtra("gameID", gameCode.getText().toString());
+                        startActivity(intent);
+                    } catch (ParseException e1) {
+                        e1.printStackTrace();
+                        //TODO: Print query error
+                    }
+                } else {
+                    //TODO: Implement error notification/window about failing to join game
+                    Toast.makeText(getApplicationContext(), "Failed to join a game. Check application/server error.", Toast.LENGTH_LONG).show();
                 }
             }
         });
-        startActivity(intent);
+
     }
 }

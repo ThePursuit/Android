@@ -43,14 +43,16 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
     public void onResume(){
         super.onResume();
         setUpMapIfNeeded();
-        BusProvider.getBus().register(this);
+        //BusProvider.getBus().register(this);
     }
 
+    /*
     @Override
     public void onPause(){
         super.onPause();
         BusProvider.getBus().unregister(this);
     }
+    */
 
     /**
      * Sets up the map if it is possible to do so (i.e., the Google Play services APK is correctly
@@ -80,6 +82,7 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
         }
     }
 
+    /*
     @Subscribe
     public void updateGame(Game game){
         ArrayList<ParseGeoPoint> locations = new ArrayList<>();
@@ -93,6 +96,7 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
         }
 
     }
+    */
 
     /**
      * This is where we can add markers or lines, add listeners or move the camera. In this case, we

@@ -6,8 +6,17 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.michael.ui.R;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class CreateGameActivity extends ActionBarActivity {
@@ -42,8 +51,34 @@ public class CreateGameActivity extends ActionBarActivity {
     }
 
     public void createGameButton(View view){
-        Intent intent = new Intent(this, LobbyActivity.class);
-        intent.setAction("createGame");
-        startActivity(intent);
+
+        ParseCloud.callFunctionInBackground("createGame", new HashMap<String, Object>(), new FunctionCallback<Map<String, ParseObject>>() {
+            public void done(Map<String, ParseObject> map, ParseException e) {
+                ArrayList<String> players = new ArrayList<>();
+                if (e == null) {
+                    ParseObject game = map.get("game");
+                    String playerID = map.get("player").get("playerID").toString();
+                    String gameID = map.get("game").get("gameID").toString();
+                    try {
+                        for (ParseObject player : game.getRelation("players").getQuery().find()) {
+                            players.add(player.get("playerID").toString());
+                        }
+                        Intent intent = new Intent(CreateGameActivity.this, LobbyActivity.class);
+                        intent.putStringArrayListExtra("players", players);
+                        intent.putExtra("gameID", gameID);
+                        intent.putExtra("playerObjID", playerID);
+                        startActivity(intent);
+                    } catch (ParseException e1) {
+                        e1.printStackTrace();
+                        //TODO: Print query error
+                    }
+                } else {
+                    //TODO: Implement error notification/window about failing to create game
+                    Toast.makeText(getApplicationContext(), "Failed to create a game. Check application/server error.", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
     }
+
 }

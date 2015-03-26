@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.example.michael.model.game.Game;
 import com.example.michael.network.provider.BusProvider;
-import com.example.michael.network.provider.ServiceProvider;
 import com.example.michael.ui.R;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -33,14 +32,12 @@ public class LobbyActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
         ButterKnife.inject(this);
-        setGameIdHeader();
-        if(this.getIntent().getAction().equals("joinGame")){
-            //ServiceProvider.getPositionService().onJoinGame(JoinGameActivity.getJoin());
-        } else if(this.getIntent().getAction().equals("createGame")){
-            //ugly test for now
-            ServiceProvider.getPositionService().onCreateGame(JoinGameActivity.getJoin());
-        }
 
+        lobbyGameCodeView.setText("Game code: " + getIntent().getStringExtra("gameID").toString());
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1, getIntent().getStringArrayListExtra("players"));
+        ListView listView = (ListView) findViewById(R.id.listView);
+        listView.setAdapter(adapter);
     }
 
 
@@ -65,6 +62,7 @@ public class LobbyActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+    /*
     @Override
     public void onResume(){
         super.onResume();
@@ -76,6 +74,7 @@ public class LobbyActivity extends ActionBarActivity {
         super.onPause();
         BusProvider.getBus().unregister(this);
     }
+
     @Subscribe
     public void derp(Game test) {
         ArrayList<String> players = new ArrayList<>();
@@ -87,22 +86,12 @@ public class LobbyActivity extends ActionBarActivity {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
-        lobbyGameCodeView.setText("Game code: " + test.getGame().get("gameID").toString());
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                                       android.R.layout.simple_list_item_1, players);
-        ListView listView = (ListView) findViewById(R.id.listView);
-        listView.setAdapter(adapter);
     }
+    */
 
-//    @OnClick(R.id.joinButton)
     public void playGame(View view){
         Intent intent = new Intent(this, GameMapActivity.class);
         startActivity(intent);
     }
-    private void setGameIdHeader(){
 
-
-    }
 }
