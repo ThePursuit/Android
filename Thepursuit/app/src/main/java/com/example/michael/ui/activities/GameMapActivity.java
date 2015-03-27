@@ -142,7 +142,8 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
             // Zoom in the Google Map
             mMap.animateCamera(CameraUpdateFactory.zoomTo(14));
             mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("You are here!").snippet("Consider yourself located"));
-
+            mMap.addMarker(new MarkerOptions().position(new LatLng(57.6881964, 11.97916389)).title("Kappa!").snippet("WOLOLOLO"));
+            mMap.addMarker(new MarkerOptions().position(new LatLng(57.68847167, 11.97744727)).title("Keepo?").snippet("askldaskld"));
         }
     }
 

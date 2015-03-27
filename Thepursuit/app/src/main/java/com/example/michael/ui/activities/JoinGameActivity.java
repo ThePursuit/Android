@@ -89,6 +89,7 @@ public class JoinGameActivity extends ActionBarActivity {
                 if (e == null) {
                     try {
                         for (ParseObject player : game.getRelation("players").getQuery().find()) {
+                            //game.getRelation("players").getQuery().findInBackground() get callback blablabla, and so on...
                             players.add(player.get("playerID").toString());
                         }
                         Intent intent = new Intent(JoinGameActivity.this, LobbyActivity.class);

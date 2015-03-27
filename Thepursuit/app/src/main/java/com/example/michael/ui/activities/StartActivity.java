@@ -53,11 +53,11 @@ public class StartActivity extends ActionBarActivity {
 
     public void joinGame(View view) {
 
-        ParseCloud.callFunctionInBackground("createPlayer", new HashMap<String, Object>(), new FunctionCallback<String>() {
-            public void done(String playerObjID, ParseException e) {
+        ParseCloud.callFunctionInBackground("createPlayer", new HashMap<String, Object>(), new FunctionCallback<ParseObject>() {
+            public void done(ParseObject player, ParseException e) {
                 if (e == null) {
                     Intent intent = new Intent(StartActivity.this, JoinGameActivity.class);
-                    intent.putExtra("playerObjID", playerObjID);
+                    intent.putExtra("playerObjID", player.getObjectId());
                     startActivity(intent);
                 } else{
                     //TODO: Implement error notification/window about failing to create player/internet connection?
