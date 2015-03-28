@@ -2,6 +2,7 @@ package com.example.michael.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,12 +11,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.michael.model.game.Game;
-import com.example.michael.network.provider.BusProvider;
 import com.example.michael.ui.R;
 import com.parse.ParseException;
 import com.parse.ParseObject;
-import com.squareup.otto.Subscribe;
+import com.parse.ParseQuery;
 
 import java.util.ArrayList;
 
@@ -26,6 +25,10 @@ import butterknife.InjectView;
 public class LobbyActivity extends ActionBarActivity {
 
     @InjectView(R.id.lobbyGameCodeView) TextView lobbyGameCodeView;
+    @InjectView(R.id.listView) ListView playerList;
+    private Handler handler = new Handler();
+    private boolean update = true;
+    ArrayAdapter<String> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,10 +37,36 @@ public class LobbyActivity extends ActionBarActivity {
         ButterKnife.inject(this);
 
         lobbyGameCodeView.setText("Game code: " + getIntent().getStringExtra("gameID").toString());
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+        adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, getIntent().getStringArrayListExtra("players"));
-        ListView listView = (ListView) findViewById(R.id.listView);
-        listView.setAdapter(adapter);
+        playerList.setAdapter(adapter);
+
+        /*
+         * Thread that updates Player list in the Game session
+         * and displays them in the lobby. Currently updating every
+         * 3 seconds (3000 ms). TODO: Cut down and separate code in the query, holy shit it's long
+         */
+        handler.postDelayed(new Runnable() {
+        @Override
+        public void run(){
+            ArrayList<String> players = new ArrayList<>();
+            if(update){
+                try {
+                    for(ParseObject player : ParseQuery.getQuery("Game").whereEqualTo("gameID", getIntent().getStringExtra("gameID").toString()).getFirst().getRelation("players").getQuery().find()){
+                        players.add(player.get("playerID").toString());
+                    }
+                    adapter.clear();
+                    adapter.addAll(players);
+                    playerList.setAdapter(adapter);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    //TODO: Could use this to notify player that Game session has been DESTROYED SOMEHOW OO YEAH!!! :> (and maybe force them to change activity view back to previous)
+                }
+            }
+            handler.postDelayed(this, 3000);
+        }
+        }, 3000);
+
     }
 
 
@@ -74,23 +103,11 @@ public class LobbyActivity extends ActionBarActivity {
         super.onPause();
         BusProvider.getBus().unregister(this);
     }
-
-    @Subscribe
-    public void derp(Game test) {
-        ArrayList<String> players = new ArrayList<>();
-
-        try {
-            for(ParseObject player : test.getPlayers().getQuery().find()){
-               players.add(player.get("playerID").toString());
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-    }
     */
 
     public void playGame(View view){
         Intent intent = new Intent(this, GameMapActivity.class);
+        update = false;//STAHP THREAD!!! Better fix soon...
         startActivity(intent);
     }
 

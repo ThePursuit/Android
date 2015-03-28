@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.michael.thepursuit"
-        minSdkVersion 18
+        minSdkVersion 16//Change according to different Versions/API's
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"

@@ -5,7 +5,8 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.example.michael.ui.activities.CreateGameActivity"
-    tools:targetApi="14" >
+    tools:targetApi="14"
+    android:keepScreenOn="true">
 
     <RelativeLayout
         android:layout_width="fill_parent"

@@ -5,25 +5,15 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 
-import com.example.michael.model.game.Game;
-import com.example.michael.model.game.Player;
-import com.example.michael.network.provider.BusProvider;
-import com.example.michael.network.provider.ServiceProvider;
 import com.example.michael.ui.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.parse.ParseException;
-import com.parse.ParseGeoPoint;
-import com.parse.ParseObject;
-import com.squareup.otto.Subscribe;
-
-import java.util.ArrayList;
 
 public class GameMapActivity extends FragmentActivity implements LocationListener {
 

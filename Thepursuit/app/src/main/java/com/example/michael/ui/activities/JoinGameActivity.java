@@ -1,24 +1,19 @@
 package com.example.michael.ui.activities;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.michael.model.game.Game;
-import com.example.michael.model.game.Player;
-import com.example.michael.network.provider.BusProvider;
-import com.example.michael.network.provider.ServiceProvider;
 import com.example.michael.ui.R;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
-import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -89,7 +84,6 @@ public class JoinGameActivity extends ActionBarActivity {
                 if (e == null) {
                     try {
                         for (ParseObject player : game.getRelation("players").getQuery().find()) {
-                            //game.getRelation("players").getQuery().findInBackground() get callback blablabla, and so on...
                             players.add(player.get("playerID").toString());
                         }
                         Intent intent = new Intent(JoinGameActivity.this, LobbyActivity.class);
