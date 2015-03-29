@@ -66,7 +66,7 @@ public class CreateGameActivity extends ActionBarActivity {
                         Intent intent = new Intent(CreateGameActivity.this, LobbyActivity.class);
                         intent.putStringArrayListExtra("players", players);
                         intent.putExtra("gameID", gameID);
-                        intent.putExtra("playerObjID", playerID);
+                        intent.putExtra("playerID", playerID);
                         startActivity(intent);
                     } catch (ParseException e1) {
                         e1.printStackTrace();

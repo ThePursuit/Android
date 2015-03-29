@@ -45,6 +45,7 @@ public class LobbyActivity extends ActionBarActivity {
          * Thread that updates Player list in the Game session
          * and displays them in the lobby. Currently updating every
          * 3 seconds (3000 ms). TODO: Cut down and separate code in the query, holy shit it's long
+         * Stops thread when you press on "Play" button, since flag will be false.
          */
         handler.postDelayed(new Runnable() {
         @Override
@@ -62,8 +63,8 @@ public class LobbyActivity extends ActionBarActivity {
                     e.printStackTrace();
                     //TODO: Could use this to notify player that Game session has been DESTROYED SOMEHOW OO YEAH!!! :> (and maybe force them to change activity view back to previous)
                 }
+                handler.postDelayed(this, 3000);
             }
-            handler.postDelayed(this, 3000);
         }
         }, 3000);
 
@@ -106,8 +107,13 @@ public class LobbyActivity extends ActionBarActivity {
     */
 
     public void playGame(View view){
+        String gameID = getIntent().getStringExtra("gameID");
+        //TODO: Change attribute name to playerName or playerNick etc...
+        String playerID = getIntent().getStringExtra("playerID");
         Intent intent = new Intent(this, GameMapActivity.class);
-        update = false;//STAHP THREAD!!! Better fix soon...
+        intent.putExtra("gameID", gameID);
+        intent.putExtra("playerID", playerID);
+        update = false;
         startActivity(intent);
     }
 

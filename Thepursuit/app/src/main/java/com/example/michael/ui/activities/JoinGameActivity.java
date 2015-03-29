@@ -26,6 +26,9 @@ public class JoinGameActivity extends ActionBarActivity {
 
     //@InjectView(R.id.playerName) EditText playerName;
     @InjectView(R.id.gameCode) EditText gameCode;
+    private String gameID;
+    private String playerObjID;
+    private String playerID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,8 +78,11 @@ public class JoinGameActivity extends ActionBarActivity {
  //   @OnClick(R.id.joinButton)
     public void joinButton(View view){
         HashMap<String, Object> joinInfo = new HashMap<>();
-        joinInfo.put("playerObjID", getIntent().getStringExtra("playerObjID"));
-        joinInfo.put("gameID", gameCode.getText().toString());
+        gameID = gameCode.getText().toString();
+        playerObjID = getIntent().getStringExtra("playerObjID");
+        playerID = getIntent().getStringExtra("playerID");
+        joinInfo.put("playerObjID", playerObjID);
+        joinInfo.put("gameID", gameID);
 
         ParseCloud.callFunctionInBackground("joinGame", joinInfo, new FunctionCallback<ParseObject>() {
             public void done(ParseObject game, ParseException e) {
@@ -88,7 +94,9 @@ public class JoinGameActivity extends ActionBarActivity {
                         }
                         Intent intent = new Intent(JoinGameActivity.this, LobbyActivity.class);
                         intent.putStringArrayListExtra("players", players);
-                        intent.putExtra("gameID", gameCode.getText().toString());
+                        intent.putExtra("gameID", gameID);
+                        intent.putExtra("playerID", playerID);
+                        //intent.putExtra("playerObjID", playerObjID);
                         startActivity(intent);
                     } catch (ParseException e1) {
                         e1.printStackTrace();

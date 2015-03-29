@@ -58,6 +58,7 @@ public class StartActivity extends ActionBarActivity {
                 if (e == null) {
                     Intent intent = new Intent(StartActivity.this, JoinGameActivity.class);
                     intent.putExtra("playerObjID", player.getObjectId());
+                    intent.putExtra("playerID", player.get("playerID").toString());
                     startActivity(intent);
                 } else{
                     //TODO: Implement error notification/window about failing to create player/internet connection?

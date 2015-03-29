@@ -34,7 +34,8 @@
             android:layout_weight="0.5"
             android:text="Catch"
             android:textAllCaps="false"
-            android:layout_alignParentLeft="true" />
+            android:layout_alignParentLeft="true"
+            android:onClick="catchButton"/>
 
         <Button
             android:id="@+id/talkButton"
@@ -43,7 +44,8 @@
             android:layout_weight="0.5"
             android:text="Talk"
             android:textAllCaps="false"
-            android:layout_alignParentRight="true" />
+            android:layout_alignParentRight="true"
+            android:onClick="talkButton"/>
 
     </LinearLayout>
 

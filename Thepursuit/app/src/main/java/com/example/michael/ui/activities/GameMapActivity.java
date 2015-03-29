@@ -7,6 +7,9 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.michael.ui.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -15,8 +18,13 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.HashMap;
+
+import butterknife.InjectView;
+
 public class GameMapActivity extends FragmentActivity implements LocationListener {
 
+    @InjectView(R.id.distanceView) TextView distanceView;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private double latitude, longitude;
 
@@ -25,8 +33,7 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_map);
         setUpMapIfNeeded();
-        //Player p1 = new Player(, JoinGameActivity.getJoin().get("playerID"), false, "clor", false, new ParseGeoPoint(latitude, longitude));
-        //ServiceProvider.getPositionService().onUpdateGame();
+
     }
 
     @Override
@@ -95,7 +102,8 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
-        //mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
+        // Set map type
+        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
         // Enable MyLocation Layer of Google Map
         mMap.setMyLocationEnabled(true);
@@ -113,9 +121,6 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
         Location myLocation = locationManager.getLastKnownLocation(provider);
 
         if(myLocation != null) {
-
-            // Set map type
-            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
             // Get latitude of the current location
             latitude = myLocation.getLatitude();
@@ -135,6 +140,108 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
             mMap.addMarker(new MarkerOptions().position(new LatLng(57.6881964, 11.97916389)).title("Kappa!").snippet("WOLOLOLO"));
             mMap.addMarker(new MarkerOptions().position(new LatLng(57.68847167, 11.97744727)).title("Keepo?").snippet("askldaskld"));
         }
+    }
+
+    public void catchButton(View view){//Test method for getting and displaying current location for now
+        HashMap<String, Object> updateInfo = new HashMap<>();
+        String gameID = getIntent().getStringExtra("gameID");
+        String playerID = getIntent().getStringExtra("playerID");
+
+        // Get LocationManager object from System Service LOCATION_SERVICE
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        // Create a criteria object to retrieve provider
+        Criteria criteria = new Criteria();
+
+        // Get the name of the best provider
+        String provider = locationManager.getBestProvider(criteria, true);
+
+        // Get Current Location
+        Location myLocation = locationManager.getLastKnownLocation(provider);
+
+        if(myLocation != null) {
+            // Create a LatLng object for the current location
+            LatLng latLng = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
+
+            // Show the current location in Google Map
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(14));
+
+            mMap.addMarker(new MarkerOptions().position(new LatLng(myLocation.getLatitude(), myLocation.getLongitude())).title("MY POSITION!").snippet("WOLOLOLO"));
+        } else{
+            //TODO: Notify failure of getting users current position
+            Toast.makeText(getApplicationContext(), "Failed to get user's current position.", Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    public Location getLocation() {
+        LocationManager locationManager;
+        boolean isNetworkEnabled;
+        boolean isGPSEnabled;
+        //boolean canGetLocation;
+        Location location = null;
+
+        try {
+            locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
+
+            // getting GPS status
+            isGPSEnabled = locationManager
+                    .isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+            // getting network status
+            isNetworkEnabled = locationManager
+                    .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+            if (!isGPSEnabled && !isNetworkEnabled) {
+                // no network provider is enabled
+            } else {
+                //canGetLocation = true;
+                if (isNetworkEnabled) {
+                    locationManager.requestLocationUpdates(
+                            LocationManager.NETWORK_PROVIDER,
+                            1000,
+                            1, this);
+                    //Log.d("Network", "Network Enabled");
+                    if (locationManager != null) {
+                        location = locationManager
+                                .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                        if (location != null) {
+                            latitude = location.getLatitude();
+                            longitude = location.getLongitude();
+                        }
+                    }
+                }
+                // if GPS Enabled get lat/long using GPS Services
+                if (isGPSEnabled) {
+                    if (location == null) {
+                        locationManager.requestLocationUpdates(
+                                LocationManager.GPS_PROVIDER,
+                                1000,
+                                1, this);
+                        //Log.d("GPS", "GPS Enabled");
+                        if (locationManager != null) {
+                            location = locationManager
+                                    .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                            if (location != null) {
+                                latitude = location.getLatitude();
+                                longitude = location.getLongitude();
+                            }
+                        }
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return location;
+    }
+
+    public void talkButton(View view){
+        mMap.clear();
     }
 
     @Override
