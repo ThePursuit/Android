@@ -6,6 +6,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.TextView;
@@ -16,9 +17,18 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
+import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.InjectView;
 
@@ -27,6 +37,8 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
     @InjectView(R.id.distanceView) TextView distanceView;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private double latitude, longitude;
+    private Handler locHandler = new Handler();
+    boolean update = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +117,8 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
         // Set map type
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
+        /*
+
         // Enable MyLocation Layer of Google Map
         mMap.setMyLocationEnabled(true);
 
@@ -140,6 +154,64 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
             mMap.addMarker(new MarkerOptions().position(new LatLng(57.6881964, 11.97916389)).title("Kappa!").snippet("WOLOLOLO"));
             mMap.addMarker(new MarkerOptions().position(new LatLng(57.68847167, 11.97744727)).title("Keepo?").snippet("askldaskld"));
         }
+
+        */
+
+        locHandler.postDelayed(new Runnable() {
+            @Override
+            public void run(){
+                HashMap<String, Object> updateInfo = new HashMap<>();
+                Location loc = getLocation();
+                updateInfo.put("gameID", getIntent().getStringExtra("gameID"));
+                updateInfo.put("playerID", getIntent().getStringExtra("playerID"));
+                updateInfo.put("latitude", loc.getLatitude());
+                updateInfo.put("longitude", loc.getLongitude());
+
+                ParseCloud.callFunctionInBackground("updateGame", updateInfo, new FunctionCallback<ParseObject>() {
+                    @Override
+                    public void done(ParseObject game, ParseException e) {
+                        mMap.clear();
+                        try {
+                            for(ParseObject player : game.getRelation("players").getQuery().find()){
+                                //if(!player.get("playerID").toString().equals(getIntent().getStringExtra("playerID"))) {//Add marker to everyone but yourself
+                                    ParseGeoPoint geo = (ParseGeoPoint) player.get("location");
+                                    LatLng latLng = new LatLng(geo.getLatitude(), geo.getLongitude());
+
+                                    // Show the current location in Google Map
+                                    //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                                    //TODO: Update marker instead of clear and add again...
+                                    //mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
+                                    mMap.addMarker(new MarkerOptions().position(latLng).title(player.get("playerID").toString()).snippet("Consider yourself located"));
+                                    //locations.put(player.get("playerID").toString(), geo);
+                                //}
+                            }
+                        } catch (ParseException e1) {
+                            e1.printStackTrace();
+                            //TODO: Print query error
+                        }
+                    }
+                });
+                /*
+                if(update){
+                    try {
+                        for(ParseObject player : ParseQuery.getQuery("Game").whereEqualTo("gameID", getIntent().getStringExtra("gameID").toString()).getFirst().getRelation("players").getQuery().find()){
+                            players.add(player.get("playerID").toString());
+                        }
+                        adapter.clear();
+                        adapter.addAll(players);
+                        playerList.setAdapter(adapter);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        //TODO: Could use this to notify player that Game session has been DESTROYED SOMEHOW OO YEAH!!! :> (and maybe force them to change activity view back to previous)
+                    }
+                    locHandler.postDelayed(this, 1000);
+                }
+                */
+                locHandler.postDelayed(this, 2000);
+            }
+
+        }, 2000);
+
     }
 
     public void catchButton(View view){//Test method for getting and displaying current location for now
@@ -159,16 +231,18 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
         // Get Current Location
         Location myLocation = locationManager.getLastKnownLocation(provider);
 
-        if(myLocation != null) {
+        Location loc = getLocation();
+
+        if(loc != null) {
             // Create a LatLng object for the current location
-            LatLng latLng = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
+            LatLng latLng = new LatLng(loc.getLatitude(), loc.getLongitude());
 
             // Show the current location in Google Map
             mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
             mMap.animateCamera(CameraUpdateFactory.zoomTo(14));
 
-            mMap.addMarker(new MarkerOptions().position(new LatLng(myLocation.getLatitude(), myLocation.getLongitude())).title("MY POSITION!").snippet("WOLOLOLO"));
+            mMap.addMarker(new MarkerOptions().position(new LatLng(loc.getLatitude(), loc.getLongitude())).title("MY POSITION!").snippet("WOLOLOLO"));
         } else{
             //TODO: Notify failure of getting users current position
             Toast.makeText(getApplicationContext(), "Failed to get user's current position.", Toast.LENGTH_LONG).show();
