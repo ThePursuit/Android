@@ -38,7 +38,8 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private double latitude, longitude;
     private Handler locHandler = new Handler();
-    boolean update = true;
+    Location loc;
+    //boolean update = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,7 +162,7 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
             @Override
             public void run(){
                 HashMap<String, Object> updateInfo = new HashMap<>();
-                Location loc = getLocation();
+                loc = getLocation();
                 updateInfo.put("gameID", getIntent().getStringExtra("gameID"));
                 updateInfo.put("playerID", getIntent().getStringExtra("playerID"));
                 updateInfo.put("latitude", loc.getLatitude());
@@ -224,6 +225,7 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
 
         // Create a criteria object to retrieve provider
         Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
 
         // Get the name of the best provider
         String provider = locationManager.getBestProvider(criteria, true);
@@ -231,18 +233,18 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
         // Get Current Location
         Location myLocation = locationManager.getLastKnownLocation(provider);
 
-        Location loc = getLocation();
+        //Location loc = getLocation();
 
-        if(loc != null) {
+        if(myLocation != null) {
             // Create a LatLng object for the current location
-            LatLng latLng = new LatLng(loc.getLatitude(), loc.getLongitude());
+            LatLng latLng = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
 
             // Show the current location in Google Map
             mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(14));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
 
-            mMap.addMarker(new MarkerOptions().position(new LatLng(loc.getLatitude(), loc.getLongitude())).title("MY POSITION!").snippet("WOLOLOLO"));
+            mMap.addMarker(new MarkerOptions().position(new LatLng(myLocation.getLatitude(), myLocation.getLongitude())).title("MY POSITION!").snippet("WOLOLOLO"));
         } else{
             //TODO: Notify failure of getting users current position
             Toast.makeText(getApplicationContext(), "Failed to get user's current position.", Toast.LENGTH_LONG).show();
@@ -271,23 +273,7 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
             if (!isGPSEnabled && !isNetworkEnabled) {
                 // no network provider is enabled
             } else {
-                //canGetLocation = true;
-                if (isNetworkEnabled) {
-                    locationManager.requestLocationUpdates(
-                            LocationManager.NETWORK_PROVIDER,
-                            1000,
-                            1, this);
-                    //Log.d("Network", "Network Enabled");
-                    if (locationManager != null) {
-                        location = locationManager
-                                .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                        if (location != null) {
-                            latitude = location.getLatitude();
-                            longitude = location.getLongitude();
-                        }
-                    }
-                }
-                // if GPS Enabled get lat/long using GPS Services
+
                 if (isGPSEnabled) {
                     if (location == null) {
                         locationManager.requestLocationUpdates(
@@ -305,6 +291,23 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
                         }
                     }
                 }
+                //canGetLocation = true;
+                else if (isNetworkEnabled) {
+                    locationManager.requestLocationUpdates(
+                            LocationManager.NETWORK_PROVIDER,
+                            1000,
+                            1, this);
+                    //Log.d("Network", "Network Enabled");
+                    if (locationManager != null) {
+                        location = locationManager
+                                .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                        if (location != null) {
+                            latitude = location.getLatitude();
+                            longitude = location.getLongitude();
+                        }
+                    }
+                }
+
             }
 
         } catch (Exception e) {
