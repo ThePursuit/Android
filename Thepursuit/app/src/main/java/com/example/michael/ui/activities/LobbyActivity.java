@@ -173,6 +173,12 @@ public class LobbyActivity extends ActionBarActivity {
                         startGameInfo.put("gameID", gameID);
                         ParseCloud.callFunctionInBackground("startGame", startGameInfo, new FunctionCallback<ParseObject>() {
                             public void done(ParseObject game, ParseException e) {
+                                try {
+                                    ParseObject playerObj = ParseQuery.getQuery("Player").get(getIntent().getStringExtra("playerObjID"));
+                                    intent.putExtra("isPrey", playerObj.getBoolean("isPrey"));
+                                } catch (ParseException e1) {
+                                    e1.printStackTrace();
+                                }
                                 startActivity(intent);
                             }
                         });

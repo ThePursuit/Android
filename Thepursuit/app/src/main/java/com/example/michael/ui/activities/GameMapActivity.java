@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,13 +37,15 @@ import butterknife.InjectView;
 public class GameMapActivity extends FragmentActivity implements LocationListener {
 
     @InjectView(R.id.distanceView) TextView distanceView;
+    @InjectView(R.id.catchButton) Button catchBtn;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private double latitude, longitude;
     private Handler locHandler = new Handler();
-    private LatLng preyLoc;
-    private LatLng myLoc;
-    Location loc;
-    boolean update = true;
+    private Location preyLoc = new Location("");
+    private String myObjID;
+    private Location loc;
+    private boolean update = true;//Make it true elsewhere...
+    private boolean isPrey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +53,11 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
         setContentView(R.layout.activity_game_map);
         setUpMapIfNeeded();
         ButterKnife.inject(this);
+        myObjID = getIntent().getStringExtra("playerObjID");
+        isPrey = getIntent().getBooleanExtra("isPrey", false);
+        if(isPrey){
+            catchBtn.setEnabled(false);
+        }
     }
 
     @Override
@@ -180,12 +188,13 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
                                 for (ParseObject player : game.getRelation("players").getQuery().find()) {
                                     //if(!player.get("playerID").toString().equals(getIntent().getStringExtra("playerID"))) {//Add marker to everyone but yourself
                                     ParseGeoPoint geo = (ParseGeoPoint) player.get("location");
-                                    LatLng latLng = new LatLng(geo.getLatitude(), geo.getLongitude());
-                                    //if(player.getBoolean("isPrey")){
-                                    //    preyLoc = latLng;
-                                    //} else{
+                                    if(player.getBoolean("isPrey")){
+                                        preyLoc.setLatitude(geo.getLatitude());
+                                        preyLoc.setLongitude(geo.getLongitude());
+                                    } else{
+                                        LatLng latLng = new LatLng(geo.getLatitude(), geo.getLongitude());
                                         mMap.addMarker(new MarkerOptions().position(latLng).title(player.get("name").toString()).snippet("Consider yourself located"));
-                                    //}
+                                    }
                                     // Show the current location in Google Map
                                     //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                                     //TODO: Update marker instead of clear and add again...
@@ -193,6 +202,11 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
 
                                     //locations.put(player.get("playerID").toString(), geo);
                                     //}
+                                }
+                                if(isPrey){
+                                    distanceView.setText("You're the Prey, Hide!");//Create separate methods to call when you're prey and so on...
+                                } else{
+                                    distanceView.setText("Prey: " + loc.distanceTo(preyLoc) + "m");
                                 }
                             } catch (ParseException e1) {
                                 e1.printStackTrace();
@@ -231,7 +245,21 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
     }
 
     public void catchButton(View view){
-
+        HashMap<String, Object> tryCatchInfo = new HashMap<>();
+        ParseGeoPoint location = new ParseGeoPoint(loc.getLatitude(), loc.getLongitude());
+        String gameID = getIntent().getStringExtra("gameID").toString();
+        tryCatchInfo.put("gameID", gameID);
+        tryCatchInfo.put("location", location);
+        ParseCloud.callFunctionInBackground("tryCatch", tryCatchInfo, new FunctionCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject game, ParseException e) {
+                if(e == null){
+                    Toast.makeText(getApplicationContext(), "CAUGHT!", Toast.LENGTH_LONG).show();
+                } else{
+                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
     public Location getLocation() {
