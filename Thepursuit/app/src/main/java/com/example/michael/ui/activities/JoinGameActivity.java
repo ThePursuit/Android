@@ -14,6 +14,7 @@ import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,11 +25,11 @@ import butterknife.InjectView;
 
 public class JoinGameActivity extends ActionBarActivity {
 
-    //@InjectView(R.id.playerName) EditText playerName;
     @InjectView(R.id.gameCode) EditText gameCode;
+    @InjectView(R.id.playerName) EditText playerName;
     private String gameID;
     private String playerObjID;
-    private String playerID;
+    private String nickName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +64,6 @@ public class JoinGameActivity extends ActionBarActivity {
     /*
     @Override
     public void onResume(){
-        //TODO: Delete Player object from server Database when touching resume button (hardware)?
         super.onResume();
         BusProvider.getBus().register(this);
     }
@@ -75,14 +75,37 @@ public class JoinGameActivity extends ActionBarActivity {
     }
     */
 
- //   @OnClick(R.id.joinButton)
+    @Override
+    public void onBackPressed(){
+        /* TODO: Enable this after testing!
+        try {
+            ParseObject playerObj = ParseQuery.getQuery("Player").get(getIntent().getStringExtra("playerObjID"));
+            playerObj.delete();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        */
+        super.onBackPressed();
+    }
+
     public void joinButton(View view){
         HashMap<String, Object> joinInfo = new HashMap<>();
         gameID = gameCode.getText().toString();
         playerObjID = getIntent().getStringExtra("playerObjID");
-        playerID = getIntent().getStringExtra("playerID");
+        nickName = playerName.getText().toString(); //Check if it's an empty string, make it "null"?
         joinInfo.put("playerObjID", playerObjID);
         joinInfo.put("gameID", gameID);
+
+        /*
+         * Store nickname in server database
+         */
+        try {
+            ParseObject playerObj = ParseQuery.getQuery("Player").get(playerObjID);
+            playerObj.put("name", nickName);
+            playerObj.saveInBackground();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         ParseCloud.callFunctionInBackground("joinGame", joinInfo, new FunctionCallback<ParseObject>() {
             public void done(ParseObject game, ParseException e) {
@@ -90,13 +113,13 @@ public class JoinGameActivity extends ActionBarActivity {
                 if (e == null) {
                     try {
                         for (ParseObject player : game.getRelation("players").getQuery().find()) {
-                            players.add(player.get("playerID").toString());
+                            players.add(player.get("name").toString());
                         }
                         Intent intent = new Intent(JoinGameActivity.this, LobbyActivity.class);
                         intent.putStringArrayListExtra("players", players);
                         intent.putExtra("gameID", gameID);
-                        intent.putExtra("playerID", playerID);
-                        //intent.putExtra("playerObjID", playerObjID);
+                        intent.putExtra("nickName", nickName); // May be redundant. Check for other intents.
+                        intent.putExtra("playerObjID", playerObjID);
                         startActivity(intent);
                     } catch (ParseException e1) {
                         e1.printStackTrace();

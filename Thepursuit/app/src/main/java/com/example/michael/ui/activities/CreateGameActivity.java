@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.michael.ui.R;
@@ -18,15 +19,26 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 
 public class CreateGameActivity extends ActionBarActivity {
+
+    @InjectView(R.id.nickNameText) EditText nickNameText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_game);
+        ButterKnife.inject(this);
     }
 
+    @Override
+    public void onBackPressed(){
+       super.onBackPressed();
+        //TODO: Back touch/button pressed...
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -57,16 +69,19 @@ public class CreateGameActivity extends ActionBarActivity {
                 ArrayList<String> players = new ArrayList<>();
                 if (e == null) {
                     ParseObject game = map.get("game");
-                    String playerID = map.get("player").get("playerID").toString();
-                    String gameID = map.get("game").get("gameID").toString();
+                    ParseObject playerObj = map.get("player");
+                    playerObj.put("name", nickNameText.getText().toString());
+                    playerObj.saveInBackground();
+                    String gameID = game.get("gameID").toString();
                     try {
                         for (ParseObject player : game.getRelation("players").getQuery().find()) {
-                            players.add(player.get("playerID").toString());
+                            players.add(player.get("name").toString());
                         }
                         Intent intent = new Intent(CreateGameActivity.this, LobbyActivity.class);
                         intent.putStringArrayListExtra("players", players);
                         intent.putExtra("gameID", gameID);
-                        intent.putExtra("playerID", playerID);
+                        intent.putExtra("nickName", nickNameText.getText().toString());
+                        intent.putExtra("playerObjID", playerObj.getObjectId());
                         startActivity(intent);
                     } catch (ParseException e1) {
                         e1.printStackTrace();
@@ -74,7 +89,7 @@ public class CreateGameActivity extends ActionBarActivity {
                     }
                 } else {
                     //TODO: Implement error notification/window about failing to create game
-                    Toast.makeText(getApplicationContext(), "Failed to create a game. Check application/server error.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Failed to create a game. Check application/server error. Might be internet connection!", Toast.LENGTH_LONG).show();
                 }
             }
         });

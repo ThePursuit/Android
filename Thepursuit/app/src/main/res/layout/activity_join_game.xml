@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -6,6 +6,43 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.example.michael.ui.activities.JoinGameActivity"
     android:keepScreenOn="true">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/joinGameLayout"
+        android:layout_above="@+id/joinButton">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Nickname:"
+        android:id="@+id/nickNameView"
+        android:layout_centerVertical="true"
+        android:textColor="#000000" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/nickNameView"
+        android:id="@+id/playerName"
+        android:hint="Enter name"
+        android:gravity="center"
+        android:layout_alignLeft="@+id/gameCode"
+        android:layout_gravity="center_vertical"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Game code:"
+        android:id="@+id/gameCodeView"
+        android:layout_centerVertical="true"
+        android:textColor="#000000"
+        android:layout_alignBaseline="@+id/gameCode"/>
 
     <EditText
         android:layout_width="wrap_content"
@@ -15,24 +52,21 @@
         android:hint="Enter game code"
         android:gravity="center"
         android:layout_gravity="center_vertical"
-        android:layout_below="@+id/playerName"/>
+        android:layout_below="@+id/playerName"
+        android:layout_toRightOf="@+id/gameCodeView"/>
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        android:id="@+id/playerName"
-        android:hint="Enter name"
-        android:gravity="center" />
+    </RelativeLayout>
 
     <Button
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Join"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:id="@+id/joinButton"
         android:textAllCaps="false"
-        android:layout_gravity="bottom"
         android:onClick="joinButton"/>
 
-</LinearLayout>
+</RelativeLayout>

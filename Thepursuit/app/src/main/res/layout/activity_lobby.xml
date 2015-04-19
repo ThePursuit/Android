@@ -20,7 +20,7 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="Game code: LiK1a32S15daZ"
             android:id="@+id/lobbyGameCodeView"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"/>
 
         <ListView
             android:paddingTop="10dp"
@@ -28,9 +28,20 @@
             android:layout_width="match_parent"
             android:layout_height="315dp"
             android:id="@+id/listView"
-            android:layout_weight="0.43" />
+            android:layout_weight="0.43"/>
 
     </LinearLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ready"
+        android:id="@+id/readyButton"
+        android:textAllCaps="false"
+        android:onClick="readyGame"
+        android:layout_below="@+id/linearLayout"
+        android:layout_toLeftOf="@+id/playButton"
+        android:layout_toStartOf="@+id/playButton" />
 
     <Button
         android:layout_width="wrap_content"

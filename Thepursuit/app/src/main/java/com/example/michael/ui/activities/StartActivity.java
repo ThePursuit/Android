@@ -6,6 +6,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.michael.ui.R;
 import com.parse.FunctionCallback;
@@ -58,10 +59,10 @@ public class StartActivity extends ActionBarActivity {
                 if (e == null) {
                     Intent intent = new Intent(StartActivity.this, JoinGameActivity.class);
                     intent.putExtra("playerObjID", player.getObjectId());
-                    intent.putExtra("playerID", player.get("playerID").toString());
+                    //intent.putExtra("playerID", player.get("playerID").toString());
                     startActivity(intent);
                 } else{
-                    //TODO: Implement error notification/window about failing to create player/internet connection?
+                    Toast.makeText(getApplicationContext(), "Failed to connect to server. Check your internet connection!", Toast.LENGTH_LONG).show();
                 }
             }
         });

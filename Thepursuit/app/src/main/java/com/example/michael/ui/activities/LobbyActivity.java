@@ -7,16 +7,21 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.michael.ui.R;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -26,9 +31,16 @@ public class LobbyActivity extends ActionBarActivity {
 
     @InjectView(R.id.lobbyGameCodeView) TextView lobbyGameCodeView;
     @InjectView(R.id.listView) ListView playerList;
+    @InjectView(R.id.playButton) Button playBtn;
+    @InjectView(R.id.readyButton) Button readyBtn;
     private Handler handler = new Handler();
+    private Handler startGameHandler = new Handler();
+    private boolean canStart = false;
+    private boolean abort; //Bool to kill the thread
     private boolean update = true;
-    ArrayAdapter<String> adapter;
+    private ArrayAdapter<String> adapter;
+    private ArrayList<String> players = new ArrayList<>();
+    private ArrayList<Integer> indices = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +50,9 @@ public class LobbyActivity extends ActionBarActivity {
 
         lobbyGameCodeView.setText("Game code: " + getIntent().getStringExtra("gameID").toString());
         adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, getIntent().getStringArrayListExtra("players"));
+                android.R.layout.simple_list_item_checked, getIntent().getStringArrayListExtra("players")); // Ugly for now, doesn't show connected players at FIRST!
+        playerList.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
+        playerList.setEnabled(false);
         playerList.setAdapter(adapter);
 
         /*
@@ -50,15 +64,24 @@ public class LobbyActivity extends ActionBarActivity {
         handler.postDelayed(new Runnable() {
         @Override
         public void run(){
-            ArrayList<String> players = new ArrayList<>();
+            players.clear();
+            indices.clear();
             if(update){
                 try {
+                    int index = 0;
                     for(ParseObject player : ParseQuery.getQuery("Game").whereEqualTo("gameID", getIntent().getStringExtra("gameID").toString()).getFirst().getRelation("players").getQuery().find()){
-                        players.add(player.get("playerID").toString());
+                        players.add(player.get("name").toString());
+                        if(player.getBoolean("isReady")){
+                            indices.add(index);
+                        }
+                        index++;
                     }
                     adapter.clear();
                     adapter.addAll(players);
                     playerList.setAdapter(adapter);
+                    for(Integer n : indices){
+                        playerList.setItemChecked(n, true);
+                    }
                 } catch (ParseException e) {
                     e.printStackTrace();
                     //TODO: Could use this to notify player that Game session has been DESTROYED SOMEHOW OO YEAH!!! :> (and maybe force them to change activity view back to previous)
@@ -106,15 +129,76 @@ public class LobbyActivity extends ActionBarActivity {
     }
     */
 
-    public void playGame(View view){
-        String gameID = getIntent().getStringExtra("gameID");
-        //TODO: Change attribute name to playerName or playerNick etc...
-        String playerID = getIntent().getStringExtra("playerID");
-        Intent intent = new Intent(this, GameMapActivity.class);
-        intent.putExtra("gameID", gameID);
-        intent.putExtra("playerID", playerID);
+    @Override
+    public void onBackPressed(){
         update = false;
-        startActivity(intent);
+        abort = true;
+        super.onBackPressed();
+    }
+
+    public void playGame(View view){
+
+        if(playBtn.getText().toString().equals("Play")) {
+            abort = false;
+            playBtn.setText("Waiting...");
+            final String gameID = getIntent().getStringExtra("gameID");
+            String nickName = getIntent().getStringExtra("nickName");
+            final Intent intent = new Intent(this, CountDownActivity.class);
+            intent.putExtra("gameID", gameID);
+            intent.putExtra("nickName", nickName);
+            intent.putExtra("playerObjID", getIntent().getStringExtra("playerObjID"));
+
+            startGameHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (!canStart) {
+                        try {
+                            canStart = true;
+                            for (ParseObject player : ParseQuery.getQuery("Game").whereEqualTo("gameID", getIntent().getStringExtra("gameID").toString()).getFirst().getRelation("players").getQuery().find()) {
+                                if (!player.getBoolean("isReady")) {
+                                    canStart = false;
+                                    break;
+                                }
+                            }
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        handler.postDelayed(this, 1000);
+                    } else if (abort) {
+                        //Do nothing, doesn't repeat thread. (Might still be a bug when pressing back and everyone is ready...
+                    } else {
+                        update = false;
+
+                        HashMap<String, Object> startGameInfo = new HashMap<>();
+                        startGameInfo.put("gameID", gameID);
+                        ParseCloud.callFunctionInBackground("startGame", startGameInfo, new FunctionCallback<ParseObject>() {
+                            public void done(ParseObject game, ParseException e) {
+                                startActivity(intent);
+                            }
+                        });
+
+                    }
+                }
+            }, 1000);
+
+        } else{
+            abort = true;
+            playBtn.setText("Play");
+        }
+
+    }
+
+    public void readyGame(View view) throws ParseException {
+        ParseObject playerObj = ParseQuery.getQuery("Player").get(getIntent().getStringExtra("playerObjID"));
+        if(readyBtn.getText().toString().equals("Ready")){
+            readyBtn.setText("Unready");
+            playerObj.put("isReady", true);
+            playerObj.saveInBackground();
+        } else{
+            readyBtn.setText("Ready");
+            playerObj.put("isReady", false);
+            playerObj.saveInBackground();
+        }
     }
 
 }

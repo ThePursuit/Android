@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class GameMapActivity extends FragmentActivity implements LocationListener {
@@ -38,15 +39,17 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private double latitude, longitude;
     private Handler locHandler = new Handler();
+    private LatLng preyLoc;
+    private LatLng myLoc;
     Location loc;
-    //boolean update = true;
+    boolean update = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_map);
         setUpMapIfNeeded();
-
+        ButterKnife.inject(this);
     }
 
     @Override
@@ -161,37 +164,42 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
         locHandler.postDelayed(new Runnable() {
             @Override
             public void run(){
-                HashMap<String, Object> updateInfo = new HashMap<>();
-                loc = getLocation();
-                updateInfo.put("gameID", getIntent().getStringExtra("gameID"));
-                updateInfo.put("playerID", getIntent().getStringExtra("playerID"));
-                updateInfo.put("latitude", loc.getLatitude());
-                updateInfo.put("longitude", loc.getLongitude());
+                if(update) {
+                    HashMap<String, Object> updateInfo = new HashMap<>();
+                    loc = getLocation();
+                    updateInfo.put("gameID", getIntent().getStringExtra("gameID"));
+                    updateInfo.put("playerObjID", getIntent().getStringExtra("playerObjID"));
+                    updateInfo.put("latitude", loc.getLatitude());
+                    updateInfo.put("longitude", loc.getLongitude());
 
-                ParseCloud.callFunctionInBackground("updateGame", updateInfo, new FunctionCallback<ParseObject>() {
-                    @Override
-                    public void done(ParseObject game, ParseException e) {
-                        mMap.clear();
-                        try {
-                            for(ParseObject player : game.getRelation("players").getQuery().find()){
-                                //if(!player.get("playerID").toString().equals(getIntent().getStringExtra("playerID"))) {//Add marker to everyone but yourself
+                    ParseCloud.callFunctionInBackground("updateGame", updateInfo, new FunctionCallback<ParseObject>() {
+                        @Override
+                        public void done(ParseObject game, ParseException e) {
+                            mMap.clear();
+                            try {
+                                for (ParseObject player : game.getRelation("players").getQuery().find()) {
+                                    //if(!player.get("playerID").toString().equals(getIntent().getStringExtra("playerID"))) {//Add marker to everyone but yourself
                                     ParseGeoPoint geo = (ParseGeoPoint) player.get("location");
                                     LatLng latLng = new LatLng(geo.getLatitude(), geo.getLongitude());
-
+                                    //if(player.getBoolean("isPrey")){
+                                    //    preyLoc = latLng;
+                                    //} else{
+                                        mMap.addMarker(new MarkerOptions().position(latLng).title(player.get("name").toString()).snippet("Consider yourself located"));
+                                    //}
                                     // Show the current location in Google Map
                                     //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                                     //TODO: Update marker instead of clear and add again...
                                     //mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
-                                    mMap.addMarker(new MarkerOptions().position(latLng).title(player.get("playerID").toString()).snippet("Consider yourself located"));
+
                                     //locations.put(player.get("playerID").toString(), geo);
-                                //}
+                                    //}
+                                }
+                            } catch (ParseException e1) {
+                                e1.printStackTrace();
+                                //TODO: Print query error
                             }
-                        } catch (ParseException e1) {
-                            e1.printStackTrace();
-                            //TODO: Print query error
                         }
-                    }
-                });
+                    });
                 /*
                 if(update){
                     try {
@@ -208,47 +216,21 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
                     locHandler.postDelayed(this, 1000);
                 }
                 */
-                locHandler.postDelayed(this, 2000);
+                    locHandler.postDelayed(this, 2000);
+                }
             }
 
         }, 2000);
 
     }
 
-    public void catchButton(View view){//Test method for getting and displaying current location for now
-        HashMap<String, Object> updateInfo = new HashMap<>();
-        String gameID = getIntent().getStringExtra("gameID");
-        String playerID = getIntent().getStringExtra("playerID");
+    @Override
+    public void onBackPressed(){
+        update = false;
+        super.onBackPressed();
+    }
 
-        // Get LocationManager object from System Service LOCATION_SERVICE
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-        // Create a criteria object to retrieve provider
-        Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-
-        // Get the name of the best provider
-        String provider = locationManager.getBestProvider(criteria, true);
-
-        // Get Current Location
-        Location myLocation = locationManager.getLastKnownLocation(provider);
-
-        //Location loc = getLocation();
-
-        if(myLocation != null) {
-            // Create a LatLng object for the current location
-            LatLng latLng = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
-
-            // Show the current location in Google Map
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
-
-            mMap.addMarker(new MarkerOptions().position(new LatLng(myLocation.getLatitude(), myLocation.getLongitude())).title("MY POSITION!").snippet("WOLOLOLO"));
-        } else{
-            //TODO: Notify failure of getting users current position
-            Toast.makeText(getApplicationContext(), "Failed to get user's current position.", Toast.LENGTH_LONG).show();
-        }
+    public void catchButton(View view){
 
     }
 
@@ -317,8 +299,43 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
         return location;
     }
 
-    public void talkButton(View view){
-        mMap.clear();
+    public void talkButton(View view){//Test method for getting and displaying current location for now
+
+        HashMap<String, Object> updateInfo = new HashMap<>();
+        String gameID = getIntent().getStringExtra("gameID");
+        String nickName = getIntent().getStringExtra("nickName");
+
+        // Get LocationManager object from System Service LOCATION_SERVICE
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        // Create a criteria object to retrieve provider
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+
+        // Get the name of the best provider
+        String provider = locationManager.getBestProvider(criteria, true);
+
+        // Get Current Location
+        Location myLocation = locationManager.getLastKnownLocation(provider);
+
+        //Location loc = getLocation();
+
+        if(myLocation != null) {
+            // Create a LatLng object for the current location
+            LatLng latLng = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
+
+            // Show the current location in Google Map
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
+
+            mMap.addMarker(new MarkerOptions().position(new LatLng(myLocation.getLatitude(), myLocation.getLongitude())).title("MY POSITION!").snippet("WOLOLOLO"));
+        } else{
+            //TODO: Notify failure of getting users current position
+            Toast.makeText(getApplicationContext(), "Failed to get user's current position.", Toast.LENGTH_LONG).show();
+        }
+
+        //mMap.clear();
     }
 
     @Override

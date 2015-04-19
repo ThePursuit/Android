@@ -8,5 +8,6 @@
     <string name="title_activity_join_game">Join Game</string>
     <string name="title_activity_lobby">LobbyActivity</string>
     <string name="title_activity_game_map">Map</string>
+    <string name="title_activity_count_down">CountDownActivity</string>
 
 </resources>

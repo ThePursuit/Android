@@ -52,6 +52,10 @@
             android:name=".activities.GameMapActivity"
             android:label="@string/title_activity_game_map" >
         </activity>
+        <activity
+            android:name=".activities.CountDownActivity"
+            android:label="@string/title_activity_count_down" >
+        </activity>
     </application>
 
 </manifest>
