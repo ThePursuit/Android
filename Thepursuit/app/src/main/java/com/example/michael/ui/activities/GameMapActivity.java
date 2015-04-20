@@ -246,10 +246,10 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
 
     public void catchButton(View view){
         HashMap<String, Object> tryCatchInfo = new HashMap<>();
-        ParseGeoPoint location = new ParseGeoPoint(loc.getLatitude(), loc.getLongitude());
         String gameID = getIntent().getStringExtra("gameID").toString();
+        String playerObjID = getIntent().getStringExtra("playerObjID");
         tryCatchInfo.put("gameID", gameID);
-        tryCatchInfo.put("location", location);
+        tryCatchInfo.put("playerObjID", playerObjID);
         ParseCloud.callFunctionInBackground("tryCatch", tryCatchInfo, new FunctionCallback<ParseObject>() {
             @Override
             public void done(ParseObject game, ParseException e) {
@@ -343,6 +343,11 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
         // Get the name of the best provider
         String provider = locationManager.getBestProvider(criteria, true);
 
+        locationManager.requestLocationUpdates(
+                LocationManager.NETWORK_PROVIDER,
+                1000,
+                1, this);
+
         // Get Current Location
         Location myLocation = locationManager.getLastKnownLocation(provider);
 
@@ -357,10 +362,10 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
 
             mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
 
-            mMap.addMarker(new MarkerOptions().position(new LatLng(myLocation.getLatitude(), myLocation.getLongitude())).title("MY POSITION!").snippet("WOLOLOLO"));
+            mMap.addMarker(new MarkerOptions().position(latLng).title("MY POSITION!").snippet("WOLOLOLO"));
         } else{
             //TODO: Notify failure of getting users current position
-            Toast.makeText(getApplicationContext(), "Failed to get user's current position.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), provider, Toast.LENGTH_LONG).show();
         }
 
         //mMap.clear();
