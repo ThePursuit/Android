@@ -73,6 +73,20 @@ public class CreateGameActivity extends ActionBarActivity {
                     playerObj.put("name", nickNameText.getText().toString());
                     playerObj.saveInBackground();
                     String gameID = game.get("gameID").toString();
+
+                    HashMap<String, Object> setRulesInfo = new HashMap<>();
+                    setRulesInfo.put("gameID", gameID);
+                    setRulesInfo.put("radius", 100);
+                    setRulesInfo.put("catchRadius", 5);
+                    setRulesInfo.put("duration", 2);
+                    setRulesInfo.put("maxPlayers", 8);
+                    ParseCloud.callFunctionInBackground("setRules", setRulesInfo, new FunctionCallback<ParseObject>() {
+                        @Override
+                        public void done(ParseObject game, ParseException e) {
+                            Toast.makeText(getApplicationContext(), "NEMAS PROBLEMAS!", Toast.LENGTH_LONG).show();
+                        }
+                    });
+
                     try {
                         for (ParseObject player : game.getRelation("players").getQuery().find()) {
                             players.add(player.get("name").toString());
