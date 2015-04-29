@@ -136,7 +136,7 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
                                     if(player.getBoolean("isPrey")){
                                         preyLoc.setLatitude(geo.getLatitude());
                                         preyLoc.setLongitude(geo.getLongitude());
-                                    } else{
+                                    } else if(!player.getObjectId().equals(getIntent().getStringExtra("playerObjID"))){
                                         LatLng latLng = new LatLng(geo.getLatitude(), geo.getLongitude());
                                         mMap.addMarker(new MarkerOptions().position(latLng).title(player.get("name").toString()).snippet("Consider yourself located"));
                                         //TODO: Update marker instead of clear and add again...
@@ -145,7 +145,7 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
                                 if(isPrey){
                                     distanceView.setText("You're the Prey, Hide!");//Create separate methods to call when you're prey and so on...
                                 } else{
-                                    distanceView.setText("Prey: " + loc.distanceTo(preyLoc) + "m"); //Convert to int...
+                                    distanceView.setText("Prey: " + Math.round(loc.distanceTo(preyLoc)) + "m");
                                 }
                             } catch (ParseException e1) {
                                 e1.printStackTrace();

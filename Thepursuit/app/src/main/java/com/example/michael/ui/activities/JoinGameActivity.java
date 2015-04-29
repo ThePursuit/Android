@@ -120,6 +120,7 @@ public class JoinGameActivity extends ActionBarActivity {
                         intent.putExtra("gameID", gameID);
                         intent.putExtra("nickName", nickName); // May be redundant. Check for other intents.
                         intent.putExtra("playerObjID", playerObjID);
+                        intent.putExtra("isLobbyLeader", false);
                         startActivity(intent);
                     } catch (ParseException e1) {
                         e1.printStackTrace();

@@ -7,6 +7,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.michael.ui.R;
@@ -23,15 +25,28 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 
-public class CreateGameActivity extends ActionBarActivity {
+public class CreateGameActivity extends ActionBarActivity implements SeekBar.OnSeekBarChangeListener {
 
     @InjectView(R.id.nickNameText) EditText nickNameText;
+    @InjectView(R.id.radiusSeekBar) SeekBar radiusSeekBar;
+    @InjectView(R.id.timeSeekBar) SeekBar timeSeekBar;
+    @InjectView(R.id.textView3) TextView tv3;
+    @InjectView(R.id.textView4) TextView tv4;
+    private int catchRadiusProgress;
+    private int timeProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_game);
         ButterKnife.inject(this);
+        radiusSeekBar.setOnSeekBarChangeListener(this);
+        timeSeekBar.setOnSeekBarChangeListener(this);
+        //timeSeekBar.setEnabled(false); To disable game time?
+        catchRadiusProgress = radiusSeekBar.getProgress() + 1;
+        timeProgress = timeSeekBar.getProgress() + 1;
+        tv3.setText("Catch Radius: " + catchRadiusProgress + "m");
+        tv4.setText("Time: " + timeProgress + "min");
     }
 
     @Override
@@ -77,13 +92,13 @@ public class CreateGameActivity extends ActionBarActivity {
                     HashMap<String, Object> setRulesInfo = new HashMap<>();
                     setRulesInfo.put("gameID", gameID);
                     setRulesInfo.put("radius", 100);
-                    setRulesInfo.put("catchRadius", 5);
-                    setRulesInfo.put("duration", 2);
+                    setRulesInfo.put("catchRadius", catchRadiusProgress);
+                    setRulesInfo.put("duration", timeProgress);
                     setRulesInfo.put("maxPlayers", 8);
                     ParseCloud.callFunctionInBackground("setRules", setRulesInfo, new FunctionCallback<ParseObject>() {
                         @Override
                         public void done(ParseObject game, ParseException e) {
-                            Toast.makeText(getApplicationContext(), "NEMAS PROBLEMAS!", Toast.LENGTH_LONG).show();
+                            //TODO: Do something when u created rules or not? Toast.makeText(getApplicationContext(), "NEMAS PROBLEMAS!", Toast.LENGTH_LONG).show();
                         }
                     });
 
@@ -96,6 +111,7 @@ public class CreateGameActivity extends ActionBarActivity {
                         intent.putExtra("gameID", gameID);
                         intent.putExtra("nickName", nickNameText.getText().toString());
                         intent.putExtra("playerObjID", playerObj.getObjectId());
+                        intent.putExtra("isLobbyLeader", true);
                         startActivity(intent);
                     } catch (ParseException e1) {
                         e1.printStackTrace();
@@ -107,6 +123,27 @@ public class CreateGameActivity extends ActionBarActivity {
                 }
             }
         });
+
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        if(seekBar == radiusSeekBar){
+            catchRadiusProgress = progress + 1;
+            tv3.setText("Catch Radius: " + catchRadiusProgress + "m");
+        } else{
+            timeProgress = progress + 1;
+            tv4.setText("Time: " + timeProgress + "min");
+        }
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
 
     }
 

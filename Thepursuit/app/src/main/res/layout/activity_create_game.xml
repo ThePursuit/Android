@@ -29,8 +29,8 @@
             android:text="Fixed game area"
             android:id="@+id/switch1"
             android:layout_below="@+id/textView2"
-            android:layout_alignRight="@+id/seekBar"
-            android:layout_alignEnd="@+id/seekBar"
+            android:layout_alignRight="@+id/radiusSeekBar"
+            android:layout_alignEnd="@+id/radiusSeekBar"
             android:layout_marginTop="110dp"
             android:checked="true" />
 
@@ -47,23 +47,24 @@
         <SeekBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/seekBar"
+            android:id="@+id/radiusSeekBar"
             android:layout_below="@+id/switch1"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="75dp"
             android:layout_alignLeft="@+id/textView2"
             android:layout_alignStart="@+id/textView2"
-            android:progress="50"/>
+            android:progress="4"
+            android:max="9"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Radius:"
+            android:text="Catch Radius:"
             android:id="@+id/textView3"
-            android:layout_alignTop="@+id/seekBar"
-            android:layout_alignBottom="@+id/seekBar"
+            android:layout_alignTop="@+id/radiusSeekBar"
+            android:layout_alignBottom="@+id/radiusSeekBar"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:gravity="center"/>
@@ -84,8 +85,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/nickNameText"
-            android:layout_below="@+id/seekBar2"
-            android:layout_alignRight="@+id/seekBar2"
+            android:layout_below="@+id/timeSeekBar"
+            android:layout_alignRight="@+id/timeSeekBar"
             android:hint="Enter name" />
 
         <TextView
@@ -102,13 +103,14 @@
         <SeekBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/seekBar2"
+            android:id="@+id/timeSeekBar"
             android:layout_alignTop="@+id/textView4"
-            android:layout_alignRight="@+id/seekBar"
-            android:layout_alignEnd="@+id/seekBar"
-            android:layout_alignLeft="@+id/seekBar"
-            android:layout_alignStart="@+id/seekBar"
-            android:progress="50"/>
+            android:layout_alignRight="@+id/radiusSeekBar"
+            android:layout_alignEnd="@+id/radiusSeekBar"
+            android:layout_alignLeft="@+id/radiusSeekBar"
+            android:layout_alignStart="@+id/radiusSeekBar"
+            android:progress="4"
+            android:max="9"/>
 
     </RelativeLayout>
 
