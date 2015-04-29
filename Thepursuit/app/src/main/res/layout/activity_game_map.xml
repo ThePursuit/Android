@@ -12,6 +12,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Prey: 100m"
+        android:background="#0ba5a5"
         android:gravity="center"/>
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
@@ -25,6 +26,7 @@
         android:id="@+id/buttonLayout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:background="#0ba5a5"
         android:layout_alignParentBottom="true">
 
         <Button
@@ -32,7 +34,7 @@
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
-            android:text="Catch"
+            android:background="@drawable/catch_button"
             android:textAllCaps="false"
             android:layout_alignParentLeft="true"
             android:onClick="catchButton"/>
@@ -42,7 +44,7 @@
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
-            android:text="Talk"
+            android:background="@drawable/talk_button"
             android:textAllCaps="false"
             android:layout_alignParentRight="true"
             android:onClick="talkButton"/>
