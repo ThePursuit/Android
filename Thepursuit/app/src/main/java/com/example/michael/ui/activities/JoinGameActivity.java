@@ -1,8 +1,10 @@
 package com.example.michael.ui.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,7 +25,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 
-public class JoinGameActivity extends ActionBarActivity {
+public class JoinGameActivity extends ActionBarActivity implements EditText.OnKeyListener {
 
     @InjectView(R.id.gameCode) EditText gameCode;
     @InjectView(R.id.playerName) EditText playerName;
@@ -36,6 +38,10 @@ public class JoinGameActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_game);
         ButterKnife.inject(this);
+        playerName.setOnKeyListener(this);
+        SharedPreferences sharedPref = getSharedPreferences("com.example.michael.PREFERENCE_FILE_KEY", MODE_PRIVATE);
+        String nickName = sharedPref.getString("nickname", "Kappa");
+        playerName.setText(nickName);
     }
 
 
@@ -77,18 +83,18 @@ public class JoinGameActivity extends ActionBarActivity {
 
     @Override
     public void onBackPressed(){
-        /* TODO: Enable this after testing!
         try {
             ParseObject playerObj = ParseQuery.getQuery("Player").get(getIntent().getStringExtra("playerObjID"));
             playerObj.delete();
         } catch (ParseException e) {
             e.printStackTrace();
+            //TODO: Internet connection error?
         }
-        */
         super.onBackPressed();
     }
 
     public void joinButton(View view){
+
         HashMap<String, Object> joinInfo = new HashMap<>();
         gameID = gameCode.getText().toString();
         playerObjID = getIntent().getStringExtra("playerObjID");
@@ -133,5 +139,18 @@ public class JoinGameActivity extends ActionBarActivity {
             }
         });
 
+    }
+
+    @Override
+    public boolean onKey(View v, int keyCode, KeyEvent event) {
+        //Store nickname locally so it remembers everytime at startup
+        if(event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER){
+            SharedPreferences sharedPref = getSharedPreferences("com.example.michael.PREFERENCE_FILE_KEY", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("nickname", playerName.getText().toString());
+            editor.commit();
+            return true;
+        }
+        return false;
     }
 }

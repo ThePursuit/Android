@@ -6,7 +6,9 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.example.michael.ui.activities.CreateGameActivity"
     tools:targetApi="14"
-    android:keepScreenOn="true">
+    android:keepScreenOn="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
 
     <RelativeLayout
         android:layout_width="fill_parent"
@@ -19,7 +21,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Create Game"
-            android:id="@+id/textView2"
+            android:id="@+id/createGameText"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true" />
 
@@ -27,90 +29,110 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Fixed game area"
-            android:id="@+id/switch1"
-            android:layout_below="@+id/textView2"
-            android:layout_alignRight="@+id/radiusSeekBar"
-            android:layout_alignEnd="@+id/radiusSeekBar"
+            android:id="@+id/fixedGASwitch"
+            android:layout_below="@+id/createGameText"
             android:layout_marginTop="110dp"
             android:checked="true" />
 
-        <Switch
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Another option"
-            android:id="@+id/switch2"
-            android:layout_above="@+id/textView3"
+            android:text="Area radius:"
+            android:id="@+id/areaRadiusText"
+            android:layout_alignTop="@+id/areaRadiusSeekBar"
+            android:layout_alignBottom="@+id/areaRadiusSeekBar"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_marginBottom="23dp" />
+            android:gravity="center"
+            android:textColor="#000000" />
 
         <SeekBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/radiusSeekBar"
-            android:layout_below="@+id/switch1"
+            android:id="@+id/areaRadiusSeekBar"
+            android:progress="4"
+            android:max="9"
+            android:layout_below="@+id/fixedGASwitch"
+            android:layout_marginTop="20dp"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginTop="75dp"
-            android:layout_alignLeft="@+id/textView2"
-            android:layout_alignStart="@+id/textView2"
+            android:layout_alignLeft="@+id/createGameText"
+            android:layout_alignStart="@+id/createGameText" />
+
+        <SeekBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/catchRadiusSeekBar"
+            android:layout_below="@+id/areaRadiusSeekBar"
+            android:layout_marginTop="10dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignLeft="@+id/createGameText"
+            android:layout_alignStart="@+id/createGameText"
             android:progress="4"
             android:max="9"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Catch Radius:"
-            android:id="@+id/textView3"
-            android:layout_alignTop="@+id/radiusSeekBar"
-            android:layout_alignBottom="@+id/radiusSeekBar"
+            android:text="Catch radius:"
+            android:id="@+id/catchRadiusText"
+            android:layout_alignTop="@+id/catchRadiusSeekBar"
+            android:layout_alignBottom="@+id/catchRadiusSeekBar"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:textColor="#000000" />
+
+        <SeekBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/timeSeekBar"
+            android:layout_below="@+id/catchRadiusSeekBar"
+            android:layout_marginTop="10dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignLeft="@+id/createGameText"
+            android:layout_alignStart="@+id/createGameText"
+            android:progress="4"
+            android:max="9"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="Time:"
-            android:id="@+id/textView4"
-            android:gravity="center"
-            android:layout_below="@+id/textView3"
+            android:id="@+id/timeText"
+            android:layout_alignTop="@+id/timeSeekBar"
+            android:layout_alignBottom="@+id/timeSeekBar"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_marginTop="25dp" />
+            android:gravity="center"
+            android:textColor="#000000" />
 
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/nickNameText"
             android:layout_below="@+id/timeSeekBar"
-            android:layout_alignRight="@+id/timeSeekBar"
-            android:hint="Enter name" />
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignLeft="@+id/createGameText"
+            android:layout_alignStart="@+id/createGameText"
+            android:hint="Enter name"
+            android:gravity="center"
+            android:inputType="text"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="Nickname:"
-            android:id="@+id/textView5"
-            android:gravity="center"
-            android:layout_alignBaseline="@id/nickNameText"
+            android:id="@+id/nickTextView"
+            android:layout_alignTop="@+id/nickNameText"
+            android:layout_alignBottom="@+id/nickNameText"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
-
-        <SeekBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/timeSeekBar"
-            android:layout_alignTop="@+id/textView4"
-            android:layout_alignRight="@+id/radiusSeekBar"
-            android:layout_alignEnd="@+id/radiusSeekBar"
-            android:layout_alignLeft="@+id/radiusSeekBar"
-            android:layout_alignStart="@+id/radiusSeekBar"
-            android:progress="4"
-            android:max="9"/>
+            android:layout_alignParentStart="true"
+            android:gravity="center"
+            android:textColor="#000000"/>
 
     </RelativeLayout>
 
@@ -120,6 +142,7 @@
         android:layout_height="wrap_content"
         android:text="Create game"
         android:id="@+id/createGameButton"
+        android:layout_marginTop="10dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"

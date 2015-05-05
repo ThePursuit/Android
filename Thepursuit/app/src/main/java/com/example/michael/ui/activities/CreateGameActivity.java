@@ -1,13 +1,17 @@
 package com.example.michael.ui.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,28 +29,43 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 
-public class CreateGameActivity extends ActionBarActivity implements SeekBar.OnSeekBarChangeListener {
+public class CreateGameActivity extends ActionBarActivity implements SeekBar.OnSeekBarChangeListener, Switch.OnCheckedChangeListener, EditText.OnKeyListener {
 
     @InjectView(R.id.nickNameText) EditText nickNameText;
-    @InjectView(R.id.radiusSeekBar) SeekBar radiusSeekBar;
+    @InjectView(R.id.catchRadiusSeekBar) SeekBar radiusSeekBar;
     @InjectView(R.id.timeSeekBar) SeekBar timeSeekBar;
-    @InjectView(R.id.textView3) TextView tv3;
-    @InjectView(R.id.textView4) TextView tv4;
+    @InjectView(R.id.catchRadiusText) TextView catchRadiusText;
+    @InjectView(R.id.timeText) TextView timeText;
+    @InjectView(R.id.areaRadiusText) TextView areaRadiusText;
+    @InjectView(R.id.areaRadiusSeekBar) SeekBar areaRadiusSeekBar;
+    @InjectView(R.id.fixedGASwitch) Switch fixedGASwitch;
     private int catchRadiusProgress;
     private int timeProgress;
+    private int areaRadiusProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_game);
         ButterKnife.inject(this);
+
         radiusSeekBar.setOnSeekBarChangeListener(this);
         timeSeekBar.setOnSeekBarChangeListener(this);
+        areaRadiusSeekBar.setOnSeekBarChangeListener(this);
+        fixedGASwitch.setOnCheckedChangeListener(this);
+        nickNameText.setOnKeyListener(this);
+
+        SharedPreferences sharedPref = getSharedPreferences("com.example.michael.PREFERENCE_FILE_KEY", MODE_PRIVATE);
+        String nickName = sharedPref.getString("nickname", "");
+        nickNameText.setText(nickName);
+
         //timeSeekBar.setEnabled(false); To disable game time?
         catchRadiusProgress = radiusSeekBar.getProgress() + 1;
         timeProgress = timeSeekBar.getProgress() + 1;
-        tv3.setText("Catch Radius: " + catchRadiusProgress + "m");
-        tv4.setText("Time: " + timeProgress + "min");
+        areaRadiusProgress = (areaRadiusSeekBar.getProgress() + 1)*100;
+        catchRadiusText.setText("Catch Radius: " + catchRadiusProgress + "m");
+        timeText.setText("Time: " + timeProgress + "min");
+        areaRadiusText.setText("Area radius: " + areaRadiusProgress + "m");
     }
 
     @Override
@@ -78,7 +97,7 @@ public class CreateGameActivity extends ActionBarActivity implements SeekBar.OnS
     }
 
     public void createGameButton(View view){
-
+        //Maybe save nickname here too?
         ParseCloud.callFunctionInBackground("createGame", new HashMap<String, Object>(), new FunctionCallback<Map<String, ParseObject>>() {
             public void done(Map<String, ParseObject> map, ParseException e) {
                 ArrayList<String> players = new ArrayList<>();
@@ -91,10 +110,10 @@ public class CreateGameActivity extends ActionBarActivity implements SeekBar.OnS
 
                     HashMap<String, Object> setRulesInfo = new HashMap<>();
                     setRulesInfo.put("gameID", gameID);
-                    setRulesInfo.put("radius", 100);
+                    setRulesInfo.put("radius", areaRadiusProgress);
                     setRulesInfo.put("catchRadius", catchRadiusProgress);
                     setRulesInfo.put("duration", timeProgress);
-                    setRulesInfo.put("maxPlayers", 8);
+                    setRulesInfo.put("maxPlayers", 8);//TODO: Delete from server and here...
                     ParseCloud.callFunctionInBackground("setRules", setRulesInfo, new FunctionCallback<ParseObject>() {
                         @Override
                         public void done(ParseObject game, ParseException e) {
@@ -113,6 +132,7 @@ public class CreateGameActivity extends ActionBarActivity implements SeekBar.OnS
                         intent.putExtra("playerObjID", playerObj.getObjectId());
                         intent.putExtra("isLobbyLeader", true);
                         startActivity(intent);
+                        finish();
                     } catch (ParseException e1) {
                         e1.printStackTrace();
                         //TODO: Print query error
@@ -130,10 +150,13 @@ public class CreateGameActivity extends ActionBarActivity implements SeekBar.OnS
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         if(seekBar == radiusSeekBar){
             catchRadiusProgress = progress + 1;
-            tv3.setText("Catch Radius: " + catchRadiusProgress + "m");
-        } else{
+            catchRadiusText.setText("Catch Radius: " + catchRadiusProgress + "m");
+        } else if(seekBar == timeSeekBar){
             timeProgress = progress + 1;
-            tv4.setText("Time: " + timeProgress + "min");
+            timeText.setText("Time: " + timeProgress + "min");
+        } else if(seekBar == areaRadiusSeekBar){
+            areaRadiusProgress = (progress + 1)*100;
+            areaRadiusText.setText("Area radius: " + areaRadiusProgress + "m");
         }
     }
 
@@ -147,4 +170,28 @@ public class CreateGameActivity extends ActionBarActivity implements SeekBar.OnS
 
     }
 
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if(!isChecked){
+            areaRadiusSeekBar.setEnabled(false);
+            areaRadiusProgress = 0;
+            areaRadiusText.setText("Not restricted");
+        } else{
+            areaRadiusSeekBar.setEnabled(true);
+            areaRadiusProgress = (areaRadiusSeekBar.getProgress()+1)*100;
+            areaRadiusText.setText("Area radius: " + areaRadiusProgress + "m");
+        }
+    }
+
+    @Override
+    public boolean onKey(View v, int keyCode, KeyEvent event) {
+        if(event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER){
+            SharedPreferences sharedPref = getSharedPreferences("com.example.michael.PREFERENCE_FILE_KEY", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("nickname", nickNameText.getText().toString());
+            editor.commit();
+            return true;
+        }
+        return false;
+    }
 }

@@ -1,13 +1,19 @@
 package com.example.michael.ui.activities;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -17,6 +23,7 @@ import com.example.michael.ui.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -27,16 +34,22 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class GameMapActivity extends FragmentActivity implements LocationListener {
+public class GameMapActivity extends FragmentActivity implements Button.OnTouchListener, MediaPlayer.OnCompletionListener, LocationListener {
 
     @InjectView(R.id.distanceView) TextView distanceView;
     @InjectView(R.id.catchButton) Button catchBtn;
+    @InjectView(R.id.talkButton) Button talkBtn;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private double latitude, longitude;
     private Handler locHandler;
@@ -45,12 +58,22 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
     private Location loc;
     private boolean update;
     private boolean isPrey;
+    private MediaRecorder mRecorder;
+    private MediaPlayer mPlayer;
+    private String mFileName;
+    private String gameID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_map);
         ButterKnife.inject(this);
+        mFileName = getFilesDir().getAbsolutePath();
+        mFileName += "/AudioRecord_ThePursuit.3gp";
+        gameID = getIntent().getStringExtra("gameID");
+        talkBtn.setOnTouchListener(this);
+        mPlayer = new MediaPlayer();
+        mPlayer.setOnCompletionListener(this);
         locHandler = new Handler();
         preyLoc = new Location("");
         update = true; //Make it true elsewhere...
@@ -112,16 +135,16 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
          */
         locHandler.postDelayed(new Runnable() {
             @Override
-            public void run(){
-                if(update) {
+            public void run() {
+                if (update) {
                     HashMap<String, Object> updateInfo = new HashMap<>();
-                    if(mMap.getMyLocation() == null){ // TODO: Better fix, doesn't need to make this check. Make sure it's never null before this method
+                    if (mMap.getMyLocation() == null) { // TODO: Better fix, doesn't need to make this check. Make sure it's never null before this method
                         Toast.makeText(getApplicationContext(), "Getting current location data...", Toast.LENGTH_LONG).show();
                         loc = getLocation();
-                    } else{
+                    } else {
                         loc = mMap.getMyLocation();
                     }
-                    updateInfo.put("gameID", getIntent().getStringExtra("gameID"));
+                    updateInfo.put("gameID", gameID);
                     updateInfo.put("playerObjID", getIntent().getStringExtra("playerObjID"));
                     updateInfo.put("latitude", loc.getLatitude());
                     updateInfo.put("longitude", loc.getLongitude());
@@ -133,18 +156,18 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
                             try {
                                 for (ParseObject player : game.getRelation("players").getQuery().find()) {
                                     ParseGeoPoint geo = (ParseGeoPoint) player.get("location");
-                                    if(player.getBoolean("isPrey")){
+                                    if (player.getBoolean("isPrey")) {
                                         preyLoc.setLatitude(geo.getLatitude());
                                         preyLoc.setLongitude(geo.getLongitude());
-                                    } else if(!player.getObjectId().equals(getIntent().getStringExtra("playerObjID"))){
+                                    } else if (!player.getObjectId().equals(getIntent().getStringExtra("playerObjID"))) {
                                         LatLng latLng = new LatLng(geo.getLatitude(), geo.getLongitude());
-                                        mMap.addMarker(new MarkerOptions().position(latLng).title(player.get("name").toString()).snippet("Consider yourself located"));
+                                        mMap.addMarker(new MarkerOptions().position(latLng).title(player.get("name").toString()).snippet("Consider yourself located").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
                                         //TODO: Update marker instead of clear and add again...
                                     }
                                 }
-                                if(isPrey){
+                                if (isPrey) {
                                     distanceView.setText("You're the Prey, Hide!");//Create separate methods to call when you're prey and so on...
-                                } else{
+                                } else {
                                     distanceView.setText("Prey: " + Math.round(loc.distanceTo(preyLoc)) + "m");
                                 }
                             } catch (ParseException e1) {
@@ -168,16 +191,15 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
 
     public void catchButton(View view){
         HashMap<String, Object> tryCatchInfo = new HashMap<>();
-        String gameID = getIntent().getStringExtra("gameID");
         String playerObjID = getIntent().getStringExtra("playerObjID");
         tryCatchInfo.put("gameID", gameID);
         tryCatchInfo.put("playerObjID", playerObjID);
         ParseCloud.callFunctionInBackground("tryCatch", tryCatchInfo, new FunctionCallback<ParseObject>() {
             @Override
             public void done(ParseObject game, ParseException e) {
-                if(e == null){
+                if (e == null) {
                     Toast.makeText(getApplicationContext(), "CAUGHT!", Toast.LENGTH_LONG).show();
-                } else{
+                } else {
                     Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
@@ -215,12 +237,12 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
         } else{
             //TODO: Notify failure of getting users current position
         }
-        */
 
         LatLng latLng = new LatLng(loc.getLatitude(), loc.getLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
-        mMap.addMarker(new MarkerOptions().position(latLng).title("MY POSITION!").snippet("WOLOLOLO"));
+        mMap.addMarker(new MarkerOptions().position(latLng).title("MY POSITION!").snippet("WOLOLOLO").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+        */
     }
 
     public Location getLocation() {
@@ -318,5 +340,65 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
     @Override
     public void onProviderDisabled(String provider) {
 
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        if(event.getAction() == MotionEvent.ACTION_DOWN){
+            talkBtn.setPressed(true);
+            talkBtn.setText("Recording...");
+
+            mRecorder = new MediaRecorder();
+            mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            mRecorder.setOutputFile(mFileName);
+            mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+            try {
+                mRecorder.prepare();
+            } catch (IOException e) {
+                Log.e("MediaRecorder", "prepare() failed");
+            }
+            mRecorder.start();
+            return true;
+        } else if(event.getAction() == MotionEvent.ACTION_UP) {
+            talkBtn.setPressed(false);
+            talkBtn.setText("Talk");
+
+            //Stop recording
+            mRecorder.stop();
+            mRecorder.release();
+            mRecorder = null;
+
+            //Convert
+            FileInputStream fis;
+            File fileObj = new File(mFileName);
+            byte[] data = new byte[(int) fileObj.length()];
+
+            try {
+                fis = new FileInputStream(fileObj);
+                fis.read(data);
+                fis.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            //Upload soundfile to server
+            try {
+                ParseObject game = ParseQuery.getQuery("Game").whereEqualTo("gameID", gameID).getFirst();//Hard coded, change
+                game.put("sound", data);
+                game.saveInBackground();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+        mp.reset();
     }
 }

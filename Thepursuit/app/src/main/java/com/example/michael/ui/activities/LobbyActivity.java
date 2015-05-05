@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.michael.ui.R;
 import com.parse.FunctionCallback;
@@ -35,10 +36,9 @@ public class LobbyActivity extends ActionBarActivity {
     ListView playerList;
     @InjectView(R.id.playButton)
     Button playBtn;
-    @InjectView(R.id.readyButton)
-    Button readyBtn;
+    //@InjectView(R.id.readyButton) Button readyBtn;
     private Handler handler = new Handler();
-    private Handler startGameHandler = new Handler();
+    //private Handler startGameHandler = new Handler();
     private boolean canStart = false;
     private boolean abort; //Bool to kill the thread
     private boolean update = true;
@@ -143,6 +143,14 @@ public class LobbyActivity extends ActionBarActivity {
 
     public void playGame(View view) {
 
+        ParseObject playerObj = null;
+        try {
+            playerObj = ParseQuery.getQuery("Player").get(getIntent().getStringExtra("playerObjID"));
+        } catch (ParseException e) {
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+
         if (playBtn.getText().toString().equals("Play")) {
             abort = false;
             playBtn.setText("Waiting...");
@@ -152,8 +160,10 @@ public class LobbyActivity extends ActionBarActivity {
             intent.putExtra("gameID", gameID);
             intent.putExtra("nickName", nickName);
             intent.putExtra("playerObjID", getIntent().getStringExtra("playerObjID"));
+            playerObj.put("isReady", true);
+            playerObj.saveInBackground();
 
-            startGameHandler.postDelayed(new Runnable() {
+            handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     if (!canStart) {
@@ -167,6 +177,7 @@ public class LobbyActivity extends ActionBarActivity {
                             }
                         } catch (ParseException e) {
                             e.printStackTrace();
+                            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                         }
                         handler.postDelayed(this, 1000);
                     } else if (abort) {
@@ -185,20 +196,32 @@ public class LobbyActivity extends ActionBarActivity {
                                         intent.putExtra("playerObjID", getIntent().getStringExtra("playerObjID"));
                                     } catch (ParseException e1) {
                                         e1.printStackTrace();
+                                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                                     }
                                     startActivity(intent);
+                                    finish();
                                 }
                             });
                         } else {
-                            //TODO: BUG! REMOVE ONE OF THE BUTTONS AND FORCE ONE OF THEM TO READY UP FIRST BEFORE ACTUALLY STARTING GAME!
-                            // ALTERNATIVE: CHECK IF GAME STATE ISPLAYING
+                            //NOTE: We need to ask for the query again to get the updated state, it's not a bug/redundancy!
                             try {
-                                ParseObject playerObj = ParseQuery.getQuery("Player").get(getIntent().getStringExtra("playerObjID"));
-                                intent.putExtra("isPrey", playerObj.getBoolean("isPrey"));
-                                intent.putExtra("playerObjID", getIntent().getStringExtra("playerObjID"));
-                                startActivity(intent);
+
+                                ParseObject gameState = ParseQuery.getQuery("Game").whereEqualTo("gameID", gameID).getFirst().getRelation("state").getQuery().getFirst();
+                                if(!gameState.getBoolean("isPlaying")){
+                                    handler.postDelayed(this, 1000);
+                                    Toast.makeText(getApplicationContext(), gameState.getBoolean("isPlaying")+"", Toast.LENGTH_SHORT).show();
+                                } else{
+                                    Toast.makeText(getApplicationContext(), gameState.getBoolean("isPlaying")+"", Toast.LENGTH_SHORT).show();
+                                    ParseObject playerObj = ParseQuery.getQuery("Player").get(getIntent().getStringExtra("playerObjID"));
+                                    intent.putExtra("isPrey", playerObj.getBoolean("isPrey"));
+                                    intent.putExtra("playerObjID", getIntent().getStringExtra("playerObjID"));
+                                    startActivity(intent);
+                                    finish();
+                                }
+
                             } catch (ParseException e) {
                                 e.printStackTrace();
+                                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                             }
 
                         }
@@ -208,12 +231,15 @@ public class LobbyActivity extends ActionBarActivity {
             }, 1000);
 
         } else {
+            playerObj.put("isReady", false);
+            playerObj.saveInBackground();
             abort = true;
             playBtn.setText("Play");
         }
 
     }
 
+    /*
     public void readyGame(View view) throws ParseException {
         ParseObject playerObj = ParseQuery.getQuery("Player").get(getIntent().getStringExtra("playerObjID"));
         if (readyBtn.getText().toString().equals("Ready")) {
@@ -226,5 +252,6 @@ public class LobbyActivity extends ActionBarActivity {
             playerObj.saveInBackground();
         }
     }
+    */
 
 }
