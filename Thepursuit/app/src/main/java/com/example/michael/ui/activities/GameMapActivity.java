@@ -39,7 +39,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import butterknife.ButterKnife;
@@ -62,6 +64,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
     private MediaPlayer mPlayer;
     private String mFileName;
     private String gameID;
+    private byte[] latestSoundData = new byte[]{0};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,6 +183,44 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
                 }
             }
         }, 2000);
+
+        locHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(update){
+
+                    try {
+                        ParseObject game = ParseQuery.getQuery("Game").whereEqualTo("gameID", gameID).getFirst();
+                        byte[] serverSoundData = game.getBytes("sound");
+                        if(serverSoundData != null && !Arrays.equals(latestSoundData, serverSoundData)){
+                            latestSoundData = serverSoundData;
+                            File tempFile = File.createTempFile("TempRetrievedAudio", "3gp");
+                            FileOutputStream fos = new FileOutputStream(tempFile);
+                            fos.write(latestSoundData);
+                            fos.close();
+                            FileInputStream storedFIS = new FileInputStream(tempFile);
+                            //Play sound
+                            try {
+                                mPlayer.setDataSource(storedFIS.getFD());
+                                mPlayer.prepare();
+                                mPlayer.start();
+                            } catch (IOException e) {
+                                Log.e("MediaPlayer", "prepare() failed");
+                            }
+                        }
+
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    locHandler.postDelayed(this, 1000);
+                }
+            }
+        }, 1000);
 
     }
 

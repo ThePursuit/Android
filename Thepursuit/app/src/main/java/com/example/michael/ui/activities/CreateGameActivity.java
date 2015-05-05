@@ -42,6 +42,8 @@ public class CreateGameActivity extends ActionBarActivity implements SeekBar.OnS
     private int catchRadiusProgress;
     private int timeProgress;
     private int areaRadiusProgress;
+    private SharedPreferences sharedPref;
+    private SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +57,8 @@ public class CreateGameActivity extends ActionBarActivity implements SeekBar.OnS
         fixedGASwitch.setOnCheckedChangeListener(this);
         nickNameText.setOnKeyListener(this);
 
-        SharedPreferences sharedPref = getSharedPreferences("com.example.michael.PREFERENCE_FILE_KEY", MODE_PRIVATE);
+        sharedPref = getSharedPreferences("com.example.michael.PREFERENCE_FILE_KEY", MODE_PRIVATE);
+        editor = sharedPref.edit();
         String nickName = sharedPref.getString("nickname", "");
         nickNameText.setText(nickName);
 
@@ -97,7 +100,10 @@ public class CreateGameActivity extends ActionBarActivity implements SeekBar.OnS
     }
 
     public void createGameButton(View view){
-        //Maybe save nickname here too?
+        //Store nickname locally
+        editor.putString("nickname", nickNameText.getText().toString());
+        editor.commit();
+
         ParseCloud.callFunctionInBackground("createGame", new HashMap<String, Object>(), new FunctionCallback<Map<String, ParseObject>>() {
             public void done(Map<String, ParseObject> map, ParseException e) {
                 ArrayList<String> players = new ArrayList<>();
@@ -186,8 +192,6 @@ public class CreateGameActivity extends ActionBarActivity implements SeekBar.OnS
     @Override
     public boolean onKey(View v, int keyCode, KeyEvent event) {
         if(event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER){
-            SharedPreferences sharedPref = getSharedPreferences("com.example.michael.PREFERENCE_FILE_KEY", MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
             editor.putString("nickname", nickNameText.getText().toString());
             editor.commit();
             return true;

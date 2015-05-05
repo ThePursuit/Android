@@ -32,6 +32,8 @@ public class JoinGameActivity extends ActionBarActivity implements EditText.OnKe
     private String gameID;
     private String playerObjID;
     private String nickName;
+    private SharedPreferences sharedPref;
+    private SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +41,9 @@ public class JoinGameActivity extends ActionBarActivity implements EditText.OnKe
         setContentView(R.layout.activity_join_game);
         ButterKnife.inject(this);
         playerName.setOnKeyListener(this);
-        SharedPreferences sharedPref = getSharedPreferences("com.example.michael.PREFERENCE_FILE_KEY", MODE_PRIVATE);
-        String nickName = sharedPref.getString("nickname", "Kappa");
+        sharedPref = getSharedPreferences("com.example.michael.PREFERENCE_FILE_KEY", MODE_PRIVATE);
+        editor = sharedPref.edit();
+        String nickName = sharedPref.getString("nickname", "");
         playerName.setText(nickName);
     }
 
@@ -94,6 +97,9 @@ public class JoinGameActivity extends ActionBarActivity implements EditText.OnKe
     }
 
     public void joinButton(View view){
+        //Store name locally
+        editor.putString("nickname", playerName.getText().toString());
+        editor.commit();
 
         HashMap<String, Object> joinInfo = new HashMap<>();
         gameID = gameCode.getText().toString();
@@ -145,8 +151,6 @@ public class JoinGameActivity extends ActionBarActivity implements EditText.OnKe
     public boolean onKey(View v, int keyCode, KeyEvent event) {
         //Store nickname locally so it remembers everytime at startup
         if(event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER){
-            SharedPreferences sharedPref = getSharedPreferences("com.example.michael.PREFERENCE_FILE_KEY", MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
             editor.putString("nickname", playerName.getText().toString());
             editor.commit();
             return true;
