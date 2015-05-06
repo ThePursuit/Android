@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Create Game"
-        android:id="@+id/textView2"
+        android:id="@+id/createGameText"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:paddingBottom="10dp"/>
@@ -22,9 +22,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Fixed game area"
-        android:id="@+id/switch1"
+        android:id="@+id/fixedGASwitch"
         android:checked="true"
-        android:layout_below="@+id/textView2"
+        android:layout_below="@+id/createGameText"
         android:layout_alignParentStart="true" />
 
     <Switch
@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:text="Another option"
         android:id="@+id/switch2"
-        android:layout_above="@+id/textView3"
+        android:layout_above="@+id/catchRadiusText"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginBottom="23dp" />
@@ -41,12 +41,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/seekBar"
-        android:layout_below="@+id/switch1"
+        android:layout_below="@+id/fixedGASwitch"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="75dp"
-        android:layout_alignLeft="@+id/textView2"
-        android:layout_alignStart="@+id/textView2"
+        android:layout_alignLeft="@+id/createGameText"
+        android:layout_alignStart="@+id/createGameText"
         android:progress="50"/>
 
     <TextView
@@ -54,7 +54,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Radius:"
-        android:id="@+id/textView3"
+        android:id="@+id/catchRadiusText"
         android:layout_alignTop="@+id/seekBar"
         android:layout_alignBottom="@+id/seekBar"
         android:layout_alignParentLeft="true"
@@ -66,9 +66,9 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Time:"
-        android:id="@+id/textView4"
+        android:id="@+id/timeText"
         android:gravity="center"
-        android:layout_below="@+id/textView3"
+        android:layout_below="@+id/catchRadiusText"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginTop="25dp" />
@@ -77,7 +77,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/seekBar2"
-        android:layout_alignTop="@+id/textView4"
+        android:layout_alignTop="@+id/timeText"
         android:layout_alignRight="@+id/seekBar"
         android:layout_alignEnd="@+id/seekBar"
         android:layout_alignLeft="@+id/seekBar"

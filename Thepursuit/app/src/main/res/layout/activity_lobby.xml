@@ -33,6 +33,7 @@
 
     </LinearLayout>
 
+    <!--
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -43,6 +44,7 @@
         android:layout_below="@+id/linearLayout"
         android:layout_toLeftOf="@+id/playButton"
         android:layout_toStartOf="@+id/playButton" />
+        -->
 
     <Button
         android:layout_width="wrap_content"

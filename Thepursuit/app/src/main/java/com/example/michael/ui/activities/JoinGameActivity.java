@@ -1,8 +1,10 @@
 package com.example.michael.ui.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,19 +25,26 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 
-public class JoinGameActivity extends ActionBarActivity {
+public class JoinGameActivity extends ActionBarActivity implements EditText.OnKeyListener {
 
     @InjectView(R.id.gameCode) EditText gameCode;
     @InjectView(R.id.playerName) EditText playerName;
     private String gameID;
     private String playerObjID;
     private String nickName;
+    private SharedPreferences sharedPref;
+    private SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_game);
         ButterKnife.inject(this);
+        playerName.setOnKeyListener(this);
+        sharedPref = getSharedPreferences("com.example.michael.PREFERENCE_FILE_KEY", MODE_PRIVATE);
+        editor = sharedPref.edit();
+        String nickName = sharedPref.getString("nickname", "");
+        playerName.setText(nickName);
     }
 
 
@@ -77,18 +86,21 @@ public class JoinGameActivity extends ActionBarActivity {
 
     @Override
     public void onBackPressed(){
-        /* TODO: Enable this after testing!
         try {
             ParseObject playerObj = ParseQuery.getQuery("Player").get(getIntent().getStringExtra("playerObjID"));
             playerObj.delete();
         } catch (ParseException e) {
             e.printStackTrace();
+            //TODO: Internet connection error?
         }
-        */
         super.onBackPressed();
     }
 
     public void joinButton(View view){
+        //Store name locally
+        editor.putString("nickname", playerName.getText().toString());
+        editor.commit();
+
         HashMap<String, Object> joinInfo = new HashMap<>();
         gameID = gameCode.getText().toString();
         playerObjID = getIntent().getStringExtra("playerObjID");
@@ -120,6 +132,7 @@ public class JoinGameActivity extends ActionBarActivity {
                         intent.putExtra("gameID", gameID);
                         intent.putExtra("nickName", nickName); // May be redundant. Check for other intents.
                         intent.putExtra("playerObjID", playerObjID);
+                        intent.putExtra("isLobbyLeader", false);
                         startActivity(intent);
                     } catch (ParseException e1) {
                         e1.printStackTrace();
@@ -132,5 +145,16 @@ public class JoinGameActivity extends ActionBarActivity {
             }
         });
 
+    }
+
+    @Override
+    public boolean onKey(View v, int keyCode, KeyEvent event) {
+        //Store nickname locally so it remembers everytime at startup
+        if(event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER){
+            editor.putString("nickname", playerName.getText().toString());
+            editor.commit();
+            return true;
+        }
+        return false;
     }
 }
