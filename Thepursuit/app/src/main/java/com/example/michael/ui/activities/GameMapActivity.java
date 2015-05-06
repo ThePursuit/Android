@@ -36,7 +36,7 @@ import butterknife.InjectView;
 public class GameMapActivity extends FragmentActivity implements LocationListener {
 
     @InjectView(R.id.distanceView) TextView distanceView;
-    @InjectView(R.id.catchButton) Button catchBtn;
+    //@InjectView(R.id.catchButton) Button catchBtn;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private double latitude, longitude;
     private Handler locHandler;
@@ -56,9 +56,9 @@ public class GameMapActivity extends FragmentActivity implements LocationListene
         update = true; //Make it true elsewhere...
         myObjID = getIntent().getStringExtra("playerObjID");
         isPrey = getIntent().getBooleanExtra("isPrey", false);
-        if(isPrey){
-            catchBtn.setEnabled(false);
-        }
+     //   if(isPrey){
+     //       catchBtn.setEnabled(false);
+     //   }
         setUpMapIfNeeded();
     }
 

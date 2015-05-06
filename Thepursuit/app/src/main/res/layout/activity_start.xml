@@ -1,41 +1,52 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+<?xml version="1.0" encoding="utf-8"?>
+ <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".StartActivity"
     android:keepScreenOn="true"> <!-- Maybe use another method for disabling screen timeout? -->
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="The Pursuit"
-        android:textSize="50sp"
-        android:id="@+id/textView"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        style="@style/AppTheme" />
+ <ImageView
+     android:id="@+id/icon"
+     android:layout_height="370dp"
+     android:layout_width="290dp"
+     android:layout_marginTop="0dp"
+     android:layout_centerHorizontal="true"
+     android:src="@drawable/ic_launcher"
+     />
 
     <Button
-        android:layout_width="150dp"
+        android:id="@+id/joinButton"
+        android:background="@drawable/joinbutton"
+        android:layout_width="170dp"
         android:layout_height="70dp"
-        android:text="Create game"
-        android:textAllCaps="false"
-        android:id="@+id/createButton"
-        android:onClick="createGame"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
-
-    <Button
-        android:layout_width="150dp"
-        android:layout_height="70dp"
+        android:padding="10dp"
         android:textAllCaps="false"
         android:text="Join game"
-        android:id="@+id/joinButton"
+        android:textColor="@color/black"
+        android:textSize="20dp"
         android:onClick="joinGame"
-        android:layout_below="@+id/createButton"
-        android:layout_alignStart="@+id/createButton"
-        android:layout_alignLeft="@+id/createButton"/>
+        android:layout_below="@+id/icon"
+        android:layout_centerHorizontal="true" />
+
+
+    <Button
+        android:id="@+id/createButton"
+        android:background="@drawable/createbutton"
+        android:layout_width="170dp"
+        android:layout_height="70dp"
+        android:padding="10dp"
+        android:textSize="20dp"
+        android:text="Create game"
+        android:textAllCaps="false"
+        android:layout_centerVertical="true"
+        android:onClick="createGame"
+        android:textColor="@color/black"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/joinButton"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
