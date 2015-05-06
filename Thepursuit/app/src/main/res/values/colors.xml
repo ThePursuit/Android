@@ -159,9 +159,9 @@
 
 
     #Colors for the background gradient
-    <color name="b1">#0ba5a5</color>
+    <color name="b1">#007070</color>
     <color name="b2">#0d8b8b</color>
-    <color name="b3">#103f49</color>
+    <color name="b3">#07AC90</color>
 
 </resources>
 

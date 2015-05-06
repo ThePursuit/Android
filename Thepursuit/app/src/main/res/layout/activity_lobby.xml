@@ -18,8 +18,22 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="25dp"
+            android:text="Lobby-time!"
+            android:textAlignment="center"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+        />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Game code: LiK1a32S15daZ"
+            android:textSize="25dp"
+            android:text="Your GameCode is: 15daZ"
             android:id="@+id/lobbyGameCodeView"
             android:layout_gravity="center_horizontal"/>
 
@@ -28,7 +42,9 @@
             android:paddingBottom="10dp"
             android:layout_width="match_parent"
             android:layout_height="315dp"
+            android:background="#99AFEEEE"
             android:id="@+id/listView"
+            android:layout_marginBottom="10dp"
             android:layout_weight="0.43"/>
 
     </LinearLayout>
@@ -45,11 +61,26 @@
         android:layout_toLeftOf="@+id/playButton"
         android:layout_toStartOf="@+id/playButton" />
         -->
-
     <Button
+        android:background="@drawable/createbutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Play"
+        android:textSize="18dp"
+        android:text="Rules"
+        android:id="@+id/Rules"
+        android:textAllCaps="false"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:onClick="playGame"
+        android:layout_alignLeft="@+id/playButton"
+        />
+
+    <Button
+        android:background="@drawable/joinbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18dp"
+        android:text="I'm Ready"
         android:id="@+id/playButton"
         android:textAllCaps="false"
         android:layout_alignParentRight="true"
