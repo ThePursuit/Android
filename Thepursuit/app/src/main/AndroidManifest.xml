@@ -28,7 +28,8 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name=".activities.StartActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -37,15 +38,18 @@
         </activity>
         <activity
             android:name=".activities.CreateGameActivity"
-            android:label="@string/title_activity_create_game" >
+            android:label="@string/title_activity_create_game"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".activities.JoinGameActivity"
-            android:label="@string/title_activity_join_game" >
+            android:label="@string/title_activity_join_game"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".activities.LobbyActivity"
-            android:label="@string/title_activity_lobby" >
+            android:label="@string/title_activity_lobby"
+            android:screenOrientation="portrait">
         </activity>
 
         <meta-data
@@ -57,11 +61,13 @@
 
         <activity
             android:name=".activities.GameMapActivity"
-            android:label="@string/title_activity_game_map" >
+            android:label="@string/title_activity_game_map"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".activities.CountDownActivity"
-            android:label="@string/title_activity_count_down" >
+            android:label="@string/title_activity_count_down"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 

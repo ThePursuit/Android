@@ -1,15 +1,17 @@
 package com.example.michael.ui.activities;
 
-import android.content.Context;
-import android.graphics.BitmapFactory;
-import android.location.Criteria;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.RectF;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -20,12 +22,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.michael.ui.R;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
@@ -39,10 +39,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -64,7 +63,9 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
     private MediaPlayer mPlayer;
     private String mFileName;
     private String gameID;
+    private int markerRadius;
     private byte[] latestSoundData = new byte[]{0};
+    private Map<String, MarkerOptions> markers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +81,8 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         locHandler = new Handler();
         preyLoc = new Location("");
         update = true; //Make it true elsewhere...
+        markerRadius = 50;
+        markers = new HashMap<>();
         myObjID = getIntent().getStringExtra("playerObjID");
         isPrey = getIntent().getBooleanExtra("isPrey", false);
         if(isPrey){
@@ -228,6 +231,36 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
     public void onBackPressed(){
         update = false;
         super.onBackPressed();
+    }
+
+    /*
+     * String of hexColor format can be either #RRGGBB (normal rgb) or #AARRGGBB (with transparent alpha value)
+     */
+    public Bitmap makeMarkerIcon(String hexColor){
+
+        Bitmap bmp = Bitmap.createBitmap(markerRadius, markerRadius + 25, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bmp);
+
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setColor(Color.parseColor(hexColor));
+        paint.setStyle(Paint.Style.FILL);
+
+        // the triangle laid under the circle
+        int pointedness = 20;
+        Path path = new Path();
+        path.setFillType(Path.FillType.EVEN_ODD);
+        path.moveTo(markerRadius / 2, markerRadius + 15);
+        path.lineTo(markerRadius / 2 + pointedness, markerRadius - 10);
+        path.lineTo(markerRadius / 2 - pointedness, markerRadius - 10);
+        canvas.drawPath(path, paint);
+
+        // circle background
+        RectF rect = new RectF(0, 0, markerRadius, markerRadius);
+        canvas.drawRoundRect(rect, markerRadius / 2, markerRadius / 2, paint);
+
+        return bmp;
+
     }
 
     public void catchButton(View view){
@@ -391,7 +424,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
 
             mRecorder = new MediaRecorder();
             mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
             mRecorder.setOutputFile(mFileName);
             mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
             try {
@@ -442,4 +475,5 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
     public void onCompletion(MediaPlayer mp) {
         mp.reset();
     }
+
 }

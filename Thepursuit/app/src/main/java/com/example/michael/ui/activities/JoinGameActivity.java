@@ -134,6 +134,7 @@ public class JoinGameActivity extends ActionBarActivity implements EditText.OnKe
                         intent.putExtra("playerObjID", playerObjID);
                         intent.putExtra("isLobbyLeader", false);
                         startActivity(intent);
+                        finish();
                     } catch (ParseException e1) {
                         e1.printStackTrace();
                         //TODO: Print query error
