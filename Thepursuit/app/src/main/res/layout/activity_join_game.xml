@@ -79,15 +79,18 @@
 
     </RelativeLayout>
 
+
     <Button
         style="?android:attr/buttonStyleSmall"
+        android:background="@drawable/joinbutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Join"
-        android:layout_alignParentBottom="true"
+        android:textSize="18dp"
+        android:id="@+id/joinButton"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:id="@+id/joinButton"
+        android:layout_alignParentBottom="true"
+        android:text="Join"
         android:textAllCaps="false"
         android:onClick="joinButton"/>
 

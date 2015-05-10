@@ -4,9 +4,9 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    android:background="@drawable/gradient"
     tools:context="com.example.michael.ui.activities.CreateGameActivity"
     tools:targetApi="14"
+    android:background="@drawable/gradient"
     android:keepScreenOn="true"
     android:focusable="true"
     android:focusableInTouchMode="true">
@@ -23,11 +23,11 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Create Game"
             android:paddingTop="40dp"
-            android:textColor="@color/white"
             android:textSize="40dp"
-            android:id="@+id/textView2"
+            android:textColor="@color/white"
+            android:id="@+id/createGameText"
             android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true" />
+            android:layout_centerHorizontal="true"/>
 
         <Switch
             android:layout_width="match_parent"
@@ -43,14 +43,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Area radius:"
-            android:textSize="18dp"
+            android:textColor="@color/white"
             android:id="@+id/areaRadiusText"
+            android:textSize="18dp"
             android:layout_alignTop="@+id/areaRadiusSeekBar"
             android:layout_alignBottom="@+id/areaRadiusSeekBar"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:gravity="center"
-            android:textColor="@color/white"
             />
 
         <SeekBar
@@ -85,8 +85,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Catch radius:"
-            android:textSize="18dp"
             android:id="@+id/catchRadiusText"
+            android:textSize="18dp"
             android:layout_alignTop="@+id/catchRadiusSeekBar"
             android:layout_alignBottom="@+id/catchRadiusSeekBar"
             android:layout_alignParentLeft="true"
@@ -113,11 +113,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Time:"
-            android:textSize="18dp"
             android:id="@+id/timeText"
             android:layout_alignTop="@+id/timeSeekBar"
             android:layout_alignBottom="@+id/timeSeekBar"
             android:layout_alignParentLeft="true"
+            android:textSize="18dp"
             android:layout_alignParentStart="true"
             android:gravity="center"
             android:textColor="@color/white"
@@ -133,6 +133,7 @@
             android:layout_alignLeft="@+id/createGameText"
             android:layout_alignStart="@+id/createGameText"
             android:hint="Enter name"
+            android:textColor="@color/white"
             android:gravity="center"
             android:inputType="text"
             />
@@ -141,7 +142,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Nickname:"
-            android:textSize="18dp"
             android:id="@+id/nickTextView"
             android:layout_alignTop="@+id/nickNameText"
             android:layout_alignBottom="@+id/nickNameText"
@@ -149,20 +149,21 @@
             android:layout_alignParentStart="true"
             android:gravity="center"
             android:textColor="@color/white"
+            android:textSize="18dp"
             />
 
     </RelativeLayout>
 
     <Button
-        style="?android:attr/buttonStyleSmall"
+        android:background="@drawable/joinbutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Create game"
-        android:id="@+id/createGameButton"
-        android:layout_marginTop="10dp"
-        android:layout_alignParentBottom="true"
+        android:textSize="18dp"
+        android:text="Create"
+        android:id="@+id/createButton"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
         android:textAllCaps="false"
         android:onClick="createGameButton"/>
 
