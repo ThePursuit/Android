@@ -83,7 +83,7 @@
     <Button
         style="?android:attr/buttonStyleSmall"
         android:background="@drawable/joinbutton"
-        android:layout_width="wrap_content"
+        android:layout_width="115dp"
         android:layout_height="wrap_content"
         android:textSize="18dp"
         android:id="@+id/joinButton"

@@ -14,8 +14,7 @@
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/createGameLayout"
-        android:layout_above="@+id/createGameButton">
+        android:id="@+id/createGameLayout">
 
         <TextView
             android:layout_width="wrap_content"
@@ -55,6 +54,7 @@
 
         <SeekBar
             android:layout_width="wrap_content"
+            android:layout_toRightOf="@+id/areaRadiusText"
             android:layout_height="wrap_content"
             android:id="@+id/areaRadiusSeekBar"
             android:progress="4"
@@ -70,6 +70,7 @@
         <SeekBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/catchRadiusText"
             android:id="@+id/catchRadiusSeekBar"
             android:layout_below="@+id/areaRadiusSeekBar"
             android:layout_marginTop="10dp"
@@ -99,6 +100,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/timeSeekBar"
+            android:layout_toRightOf="@+id/timeText"
             android:layout_below="@+id/catchRadiusSeekBar"
             android:layout_marginTop="10dp"
             android:layout_alignParentRight="true"
@@ -156,7 +158,7 @@
 
     <Button
         android:background="@drawable/joinbutton"
-        android:layout_width="wrap_content"
+        android:layout_width="115dp"
         android:layout_height="wrap_content"
         android:textSize="18dp"
         android:text="Create"

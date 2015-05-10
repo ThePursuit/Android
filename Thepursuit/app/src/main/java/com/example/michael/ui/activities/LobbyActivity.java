@@ -53,7 +53,9 @@ public class LobbyActivity extends ActionBarActivity {
         setContentView(R.layout.activity_lobby);
         ButterKnife.inject(this);
         isLobbyLeader = getIntent().getBooleanExtra("isLobbyLeader", false);
-        lobbyGameCodeView.setText("Your GameCode is: "+ getIntent().getStringExtra("gameID").toString());
+        lobbyGameCodeView.setText("Your GameCode is: "+"\t"+"\t"+"\t"+"\t"+"\t"+"\t"+"\t"+"\t"+"\t"+"\t"+"\t"+"\t" + getIntent().getStringExtra("gameID").toString() + "\n" +
+                                    "The duration of the game is: " +"\t"+"\t"+"\t"+ getIntent().getStringExtra("durationTime") + "\n" +
+                                    "The radius of the game is: "+"\t"+"\t"+"\t"+"\t"+"\t"+"\t" + getIntent().getStringExtra("areaRadius"));
         adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_checked, getIntent().getStringArrayListExtra("players")); // Ugly for now, doesn't show connected players at FIRST!
         playerList.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
