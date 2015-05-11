@@ -50,7 +50,7 @@
         android:id="@+id/rulesButton"
         android:background="@drawable/rulesbutton"
         android:layout_width="80dp"
-        android:layout_height="35dp"
+        android:layout_height="38dp"
         android:padding="10dp"
         android:textSize="16dp"
         android:textAlignment="center"
