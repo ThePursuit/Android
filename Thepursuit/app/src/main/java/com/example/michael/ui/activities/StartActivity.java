@@ -1,5 +1,6 @@
 package com.example.michael.ui.activities;
 
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -17,7 +18,7 @@ import com.parse.ParseObject;
 import java.util.HashMap;
 
 
-public class StartActivity extends ActionBarActivity {
+public class StartActivity extends ActionBarActivity implements GameStateDialog.Communicator {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +31,12 @@ public class StartActivity extends ActionBarActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_start, menu);
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 
     @Override
@@ -64,6 +71,17 @@ public class StartActivity extends ActionBarActivity {
                 }
             }
         });
+    }
+
+    public void rulesBtn(View view) {
+        FragmentManager fm = getFragmentManager();
+        GameStateDialog dialog = new GameStateDialog();
+        dialog.show(fm, "Info");
+    }
+
+    @Override
+    public void onDialogMessage() {
+
     }
 
 }

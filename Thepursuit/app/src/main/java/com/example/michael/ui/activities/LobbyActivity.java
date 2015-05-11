@@ -45,12 +45,14 @@ public class LobbyActivity extends ActionBarActivity {
     private ArrayAdapter<String> adapter;
     private ArrayList<String> players = new ArrayList<>();
     private ArrayList<Integer> indices = new ArrayList<>();
+    private String nickName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
         ButterKnife.inject(this);
+        nickName = getIntent().getStringExtra("nickName");
         isLobbyLeader = getIntent().getBooleanExtra("isLobbyLeader", false);
         lobbyGameCodeView.setText("Game code: " + getIntent().getStringExtra("gameID").toString());
         adapter = new ArrayAdapter<>(this,
@@ -157,7 +159,6 @@ public class LobbyActivity extends ActionBarActivity {
             abort = false;
             playBtn.setText("Waiting...");
             final String gameID = getIntent().getStringExtra("gameID");
-            String nickName = getIntent().getStringExtra("nickName");
             final Intent intent = new Intent(this, CountDownActivity.class);
             intent.putExtra("gameID", gameID);
             intent.putExtra("nickName", nickName);

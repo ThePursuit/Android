@@ -10,4 +10,7 @@
     <string name="title_activity_game_map">Map</string>
     <string name="title_activity_count_down">CountDownActivity</string>
 
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

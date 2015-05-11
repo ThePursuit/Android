@@ -1,5 +1,7 @@
 package com.example.michael.ui.activities;
 
+import android.app.FragmentManager;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -10,6 +12,7 @@ import android.location.Location;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.FragmentActivity;
@@ -49,7 +52,7 @@ import java.util.Map;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class GameMapActivity extends FragmentActivity implements Button.OnTouchListener, MediaPlayer.OnCompletionListener {
+public class GameMapActivity extends FragmentActivity implements Button.OnTouchListener, MediaPlayer.OnCompletionListener, GameStateDialog.Communicator {
 
     @InjectView(R.id.distanceView)
     TextView distanceView;
@@ -78,15 +81,24 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
     private Thread audioThread;
     private long updateLocationInterval;
     private int distanceToPrey;
+    private CountDownTimer cdt;
+    private final long startTime = 5000;
+    private final long interval = 1000;
+    private String nickName;
+    private FragmentManager fragmentManager;
+    private GameStateDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_map);
         ButterKnife.inject(this);
+        fragmentManager = getFragmentManager();
+        dialog = new GameStateDialog();
         mFileName = getFilesDir().getAbsolutePath();
         mFileName += "/AudioRecord_ThePursuit.3gp";
         gameID = getIntent().getStringExtra("gameID");
+        nickName = getIntent().getStringExtra("nickName");
         talkBtn.setOnTouchListener(this);
         mPlayer = new MediaPlayer();
         mPlayer.setOnCompletionListener(this);
@@ -110,6 +122,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         locHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
+                //TODO: Change this approach, too laggy...
                 getMyLocation();
             }
         };
@@ -130,16 +143,16 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
                     } else {
                         distanceView.setText("Prey: " + distanceToPrey + "m");
                     }
-                }
-                //Change update frequency
-                if (distanceToPrey > 100) {
-                    updateLocationInterval = 2000;
-                } else if (distanceToPrey > 20) {
-                    updateLocationInterval = 1000;
-                } else {
-                    updateLocationInterval = 500;
-                }
 
+                    //Change update frequency
+                    if (distanceToPrey > 100) {
+                        updateLocationInterval = 2000;
+                    } else if (distanceToPrey > 20) {
+                        updateLocationInterval = 1000;
+                    } else {
+                        updateLocationInterval = 500;
+                    }
+                }
             }
         };
 
@@ -157,22 +170,27 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
                     ParseCloud.callFunctionInBackground("updateGame", updateInfo, new FunctionCallback<ParseObject>() {
                         @Override
                         public void done(ParseObject game, ParseException e) {
-                            try {
-                                for (ParseObject player : game.getRelation("players").getQuery().find()) {
-                                    ParseGeoPoint geo = (ParseGeoPoint) player.get("location");
-                                    if (player.getBoolean("isPrey")) {
-                                        preyLoc.setLatitude(geo.getLatitude());
-                                        preyLoc.setLongitude(geo.getLongitude());
-                                    } else if (!player.getObjectId().equals(getIntent().getStringExtra("playerObjID"))) {
-                                        String playerName = player.get("name").toString();
-                                        LatLng latLng = new LatLng(geo.getLatitude(), geo.getLongitude());
-                                        MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(playerName).icon(BitmapDescriptorFactory.fromBitmap(makeMarkerIcon(player.get("playerColor").toString())));
-                                        markers.put(playerName, markerOptions);
+                            if (e == null) {
+                                try {
+                                    for (ParseObject player : game.getRelation("players").getQuery().find()) {
+                                        ParseGeoPoint geo = (ParseGeoPoint) player.get("location");
+                                        if (player.getBoolean("isPrey")) {
+                                            preyLoc.setLatitude(geo.getLatitude());
+                                            preyLoc.setLongitude(geo.getLongitude());
+                                        } else if (!player.getObjectId().equals(getIntent().getStringExtra("playerObjID"))) {
+                                            String playerName = player.get("name").toString();
+                                            LatLng latLng = new LatLng(geo.getLatitude(), geo.getLongitude());
+                                            MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(playerName).icon(BitmapDescriptorFactory.fromBitmap(makeMarkerIcon(player.get("playerColor").toString())));
+                                            markers.put(playerName, markerOptions);
+                                        }
                                     }
+                                } catch (ParseException e1) {
+                                    e1.printStackTrace();
+                                    //TODO: Print query error
                                 }
-                            } catch (ParseException e1) {
-                                e1.printStackTrace();
-                                //TODO: Print query error
+                            } else {
+                                //TODO: Error msg...
+                                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                             }
                         }
                     });
@@ -221,6 +239,19 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
                     }
 
                 }
+            }
+        };
+
+        cdt = new CountDownTimer(startTime, interval) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                catchBtn.setText(String.valueOf(millisUntilFinished / 1000));
+            }
+
+            @Override
+            public void onFinish() {
+                catchBtn.setText("Catch");
+                catchBtn.setEnabled(true);
             }
         };
 
@@ -303,7 +334,6 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
 
     public void playSoundData(byte[] soundData) {
         try {
-            //talkBtn.setEnabled(false);
             File tempFile = File.createTempFile("TempRetrievedAudio", "3gp");
             FileOutputStream fos = new FileOutputStream(tempFile);
             fos.write(soundData);
@@ -362,16 +392,19 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
 
     public void catchButton(View view) {
         HashMap<String, Object> tryCatchInfo = new HashMap<>();
-        String playerObjID = getIntent().getStringExtra("playerObjID");
         tryCatchInfo.put("gameID", gameID);
         tryCatchInfo.put("playerObjID", playerObjID);
         ParseCloud.callFunctionInBackground("tryCatch", tryCatchInfo, new FunctionCallback<ParseObject>() {
             @Override
             public void done(ParseObject game, ParseException e) {
                 if (e == null) {
+                    update = false;
+                    dialog.show(fragmentManager, "Title");
                     Toast.makeText(getApplicationContext(), "CAUGHT!", Toast.LENGTH_LONG).show();
                 } else {
-                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "You're not close enough!", Toast.LENGTH_LONG).show();
+                    catchBtn.setEnabled(false);
+                    cdt.start();
                 }
             }
         });
@@ -429,7 +462,6 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
                 audio.put("timesListened", 1);
                 audio.save();
                 gameAudioRelation.add(audio);
-                //game.put("sound", data);
                 game.saveInBackground();
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -444,6 +476,29 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         mp.stop();
         mp.reset();
         talkBtn.setEnabled(true);
+    }
+
+    @Override
+    public void onDialogMessage() {
+        ArrayList<String> players = new ArrayList<>();
+        try {
+            for (ParseObject player : ParseQuery.getQuery("Game").whereEqualTo("gameID", gameID).getFirst().getRelation("players").getQuery().find()) {
+                players.add(player.get("name").toString());
+            }
+            Intent intent = new Intent(GameMapActivity.this, LobbyActivity.class);
+            intent.putStringArrayListExtra("players", players);
+            intent.putExtra("gameID", gameID);
+            intent.putExtra("nickName", nickName); // May be redundant. Check for other intents.
+            intent.putExtra("playerObjID", playerObjID);
+            intent.putExtra("isLobbyLeader", false);
+            startActivity(intent);
+            finish();
+        } catch (ParseException e1) {
+            e1.printStackTrace();
+            //super.onBackPressed();
+            //finish();
+            //TODO: No internet connection or game leader left which causes game object to destroy?
+        }
     }
 
 }
