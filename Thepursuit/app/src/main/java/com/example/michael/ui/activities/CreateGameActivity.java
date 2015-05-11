@@ -64,7 +64,7 @@ public class CreateGameActivity extends ActionBarActivity implements SeekBar.OnS
 
         //timeSeekBar.setEnabled(false); To disable game time?
         catchRadiusProgress = radiusSeekBar.getProgress() + 1;
-        timeProgress = timeSeekBar.getProgress() + 1;
+        timeProgress = timeSeekBar.getProgress() + 2;
         areaRadiusProgress = (areaRadiusSeekBar.getProgress() + 1)*100;
         catchRadiusText.setText("Catch Radius: " + catchRadiusProgress + "m");
         timeText.setText("Time: " + timeProgress + "min");
@@ -73,7 +73,7 @@ public class CreateGameActivity extends ActionBarActivity implements SeekBar.OnS
 
     @Override
     public void onBackPressed(){
-       super.onBackPressed();
+        super.onBackPressed();
         //TODO: Back touch/button pressed...
     }
 
@@ -158,7 +158,7 @@ public class CreateGameActivity extends ActionBarActivity implements SeekBar.OnS
             catchRadiusProgress = progress + 1;
             catchRadiusText.setText("Catch Radius: " + catchRadiusProgress + "m");
         } else if(seekBar == timeSeekBar){
-            timeProgress = progress + 1;
+            timeProgress = progress + 2;
             timeText.setText("Time: " + timeProgress + "min");
         } else if(seekBar == areaRadiusSeekBar){
             areaRadiusProgress = (progress + 1)*100;

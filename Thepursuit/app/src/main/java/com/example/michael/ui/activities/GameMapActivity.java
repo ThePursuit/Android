@@ -7,12 +7,11 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -22,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.michael.ui.R;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -33,29 +33,35 @@ import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseRelation;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class GameMapActivity extends FragmentActivity implements Button.OnTouchListener, MediaPlayer.OnCompletionListener, LocationListener {
+public class GameMapActivity extends FragmentActivity implements Button.OnTouchListener, MediaPlayer.OnCompletionListener {
 
-    @InjectView(R.id.distanceView) TextView distanceView;
-    @InjectView(R.id.catchButton) Button catchBtn;
-    @InjectView(R.id.talkButton) Button talkBtn;
+    @InjectView(R.id.distanceView)
+    TextView distanceView;
+    @InjectView(R.id.catchButton)
+    Button catchBtn;
+    @InjectView(R.id.talkButton)
+    Button talkBtn;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-    private double latitude, longitude;
     private Handler locHandler;
+    private Handler updateHandler;
     private Location preyLoc;
-    private String myObjID;
+    private String playerObjID;
     private Location loc;
     private boolean update;
     private boolean isPrey;
@@ -64,8 +70,14 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
     private String mFileName;
     private String gameID;
     private int markerRadius;
-    private byte[] latestSoundData = new byte[]{0};
+    private List<byte[]> playedAudioFiles;
     private Map<String, MarkerOptions> markers;
+    private Runnable updateLocation;
+    private Runnable retrieveAudio;
+    private Thread locationThread;
+    private Thread audioThread;
+    private long updateLocationInterval;
+    private int distanceToPrey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,21 +90,162 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         talkBtn.setOnTouchListener(this);
         mPlayer = new MediaPlayer();
         mPlayer.setOnCompletionListener(this);
-        locHandler = new Handler();
         preyLoc = new Location("");
+        preyLoc.setLatitude(0);
+        preyLoc.setLongitude(0);
         update = true; //Make it true elsewhere...
-        markerRadius = 50;
+        markerRadius = 25;
         markers = new HashMap<>();
-        myObjID = getIntent().getStringExtra("playerObjID");
+        playedAudioFiles = new ArrayList<>();
+        playerObjID = getIntent().getStringExtra("playerObjID");
         isPrey = getIntent().getBooleanExtra("isPrey", false);
-        if(isPrey){
+        loc = new Location("");
+        loc.setLatitude(0);
+        loc.setLongitude(0);
+        updateLocationInterval = 1000;
+        if (isPrey) {
             catchBtn.setEnabled(false);
         }
+
+        locHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                getMyLocation();
+            }
+        };
+
+        updateHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                mMap.clear();
+                for (MarkerOptions mo : markers.values()) {
+                    mMap.addMarker(mo);
+                }
+                if (isPrey) {
+                    distanceView.setText("You're the Prey, Hide!");//Create separate methods to call when you're prey and so on...
+                } else {
+                    distanceToPrey = Math.round(loc.distanceTo(preyLoc));
+                    if (distanceToPrey < 10) {
+                        distanceView.setText("You're very close!");
+                    } else {
+                        distanceView.setText("Prey: " + distanceToPrey + "m");
+                    }
+                }
+                //Change update frequency
+                if (distanceToPrey > 100) {
+                    updateLocationInterval = 2000;
+                } else if (distanceToPrey > 20) {
+                    updateLocationInterval = 1000;
+                } else {
+                    updateLocationInterval = 500;
+                }
+
+            }
+        };
+
+        updateLocation = new Runnable() {
+            @Override
+            public void run() {
+                while (update) {
+                    HashMap<String, Object> updateInfo = new HashMap<>();
+                    locHandler.sendEmptyMessage(0);
+                    updateInfo.put("gameID", gameID);
+                    updateInfo.put("playerObjID", getIntent().getStringExtra("playerObjID"));
+                    updateInfo.put("latitude", loc.getLatitude());
+                    updateInfo.put("longitude", loc.getLongitude());
+
+                    ParseCloud.callFunctionInBackground("updateGame", updateInfo, new FunctionCallback<ParseObject>() {
+                        @Override
+                        public void done(ParseObject game, ParseException e) {
+                            try {
+                                for (ParseObject player : game.getRelation("players").getQuery().find()) {
+                                    ParseGeoPoint geo = (ParseGeoPoint) player.get("location");
+                                    if (player.getBoolean("isPrey")) {
+                                        preyLoc.setLatitude(geo.getLatitude());
+                                        preyLoc.setLongitude(geo.getLongitude());
+                                    } else if (!player.getObjectId().equals(getIntent().getStringExtra("playerObjID"))) {
+                                        String playerName = player.get("name").toString();
+                                        LatLng latLng = new LatLng(geo.getLatitude(), geo.getLongitude());
+                                        MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(playerName).icon(BitmapDescriptorFactory.fromBitmap(makeMarkerIcon(player.get("playerColor").toString())));
+                                        markers.put(playerName, markerOptions);
+                                    }
+                                }
+                            } catch (ParseException e1) {
+                                e1.printStackTrace();
+                                //TODO: Print query error
+                            }
+                        }
+                    });
+
+                    updateHandler.sendEmptyMessage(0);
+
+                    try {
+                        Thread.sleep(updateLocationInterval);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+
+        retrieveAudio = new Runnable() {
+            @Override
+            public void run() {
+                while (update) {
+
+                    try {
+                        ParseObject game = ParseQuery.getQuery("Game").whereEqualTo("gameID", gameID).getFirst();
+                        List<ParseObject> audioFiles = game.getRelation("audioFiles").getQuery().find();
+
+                        if (audioFiles != null) {
+
+                            for (ParseObject audioFile : audioFiles) {
+                                byte[] serverSoundData = audioFile.getBytes("sound");
+                                if (!byteListContains(playedAudioFiles, serverSoundData)) {
+                                    playSoundData(serverSoundData);
+                                    playedAudioFiles.add(serverSoundData);
+                                    break;
+                                }
+                            }
+
+                        }
+
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        };
+
         setUpMapIfNeeded();
+
+        locationThread = new Thread(updateLocation);
+        audioThread = new Thread(retrieveAudio);
+        locationThread.start();
+        audioThread.start();
+    }
+
+    public void getMyLocation() {
+        if (mMap.getMyLocation() == null) { // TODO: Better fix, doesn't need to make this check. Make sure it's never null before this method
+            Toast.makeText(getApplicationContext(), "Getting current location data...", Toast.LENGTH_LONG).show();
+            loc.setLatitude(0);
+            loc.setLongitude(0);
+        } else {
+            loc = mMap.getMyLocation();
+            //LatLng myLatLng = new LatLng(loc.getLatitude(), loc.getLongitude());
+            //mMap.moveCamera(CameraUpdateFactory.newLatLng(myLatLng));
+        }
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         setUpMapIfNeeded();
     }
@@ -134,109 +287,53 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         // Set map type
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         mMap.setMyLocationEnabled(true);
+        //Disable scrolling
+        //mMap.getUiSettings().setScrollGesturesEnabled(false);
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
+    }
 
-        /**
-         * Thread that updates player's current location to the server
-         * and gets every players location in the game session every 2 seconds
-         */
-        locHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (update) {
-                    HashMap<String, Object> updateInfo = new HashMap<>();
-                    if (mMap.getMyLocation() == null) { // TODO: Better fix, doesn't need to make this check. Make sure it's never null before this method
-                        Toast.makeText(getApplicationContext(), "Getting current location data...", Toast.LENGTH_LONG).show();
-                        loc = getLocation();
-                    } else {
-                        loc = mMap.getMyLocation();
-                    }
-                    updateInfo.put("gameID", gameID);
-                    updateInfo.put("playerObjID", getIntent().getStringExtra("playerObjID"));
-                    updateInfo.put("latitude", loc.getLatitude());
-                    updateInfo.put("longitude", loc.getLongitude());
-
-                    ParseCloud.callFunctionInBackground("updateGame", updateInfo, new FunctionCallback<ParseObject>() {
-                        @Override
-                        public void done(ParseObject game, ParseException e) {
-                            mMap.clear();
-                            try {
-                                for (ParseObject player : game.getRelation("players").getQuery().find()) {
-                                    ParseGeoPoint geo = (ParseGeoPoint) player.get("location");
-                                    if (player.getBoolean("isPrey")) {
-                                        preyLoc.setLatitude(geo.getLatitude());
-                                        preyLoc.setLongitude(geo.getLongitude());
-                                    } else if (!player.getObjectId().equals(getIntent().getStringExtra("playerObjID"))) {
-                                        LatLng latLng = new LatLng(geo.getLatitude(), geo.getLongitude());
-                                        mMap.addMarker(new MarkerOptions().position(latLng).title(player.get("name").toString()).snippet("Consider yourself located").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-                                        //TODO: Update marker instead of clear and add again...
-                                    }
-                                }
-                                if (isPrey) {
-                                    distanceView.setText("You're the Prey, Hide!");//Create separate methods to call when you're prey and so on...
-                                } else {
-                                    distanceView.setText("Prey: " + Math.round(loc.distanceTo(preyLoc)) + "m");
-                                }
-                            } catch (ParseException e1) {
-                                e1.printStackTrace();
-                                //TODO: Print query error
-                            }
-                        }
-                    });
-                    locHandler.postDelayed(this, 2000);
-                }
+    public boolean byteListContains(List<byte[]> byteArrayList, byte[] byteArray) {
+        for (byte[] bae : byteArrayList) {
+            if (Arrays.equals(bae, byteArray)) {
+                return true;
             }
-        }, 2000);
+        }
+        return false;
+    }
 
-        locHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if(update){
+    public void playSoundData(byte[] soundData) {
+        try {
+            //talkBtn.setEnabled(false);
+            File tempFile = File.createTempFile("TempRetrievedAudio", "3gp");
+            FileOutputStream fos = new FileOutputStream(tempFile);
+            fos.write(soundData);
+            fos.close();
+            FileInputStream storedFIS = new FileInputStream(tempFile);
+            //Play sound
+            mPlayer.setDataSource(storedFIS.getFD());
+            mPlayer.prepare();
+            mPlayer.start();
+        } catch (IOException e) {
+            Log.e("MediaPlayer", "prepare() failed");
+        }
 
-                    try {
-                        ParseObject game = ParseQuery.getQuery("Game").whereEqualTo("gameID", gameID).getFirst();
-                        byte[] serverSoundData = game.getBytes("sound");
-                        if(serverSoundData != null && !Arrays.equals(latestSoundData, serverSoundData)){
-                            latestSoundData = serverSoundData;
-                            File tempFile = File.createTempFile("TempRetrievedAudio", "3gp");
-                            FileOutputStream fos = new FileOutputStream(tempFile);
-                            fos.write(latestSoundData);
-                            fos.close();
-                            FileInputStream storedFIS = new FileInputStream(tempFile);
-                            //Play sound
-                            try {
-                                mPlayer.setDataSource(storedFIS.getFD());
-                                mPlayer.prepare();
-                                mPlayer.start();
-                            } catch (IOException e) {
-                                Log.e("MediaPlayer", "prepare() failed");
-                            }
-                        }
-
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    locHandler.postDelayed(this, 1000);
-                }
-            }
-        }, 1000);
+        while (mPlayer.isPlaying()) {
+            //wait for it to finnish
+        }
 
     }
 
     @Override
-    public void onBackPressed(){
+    public void onBackPressed() {
         update = false;
         super.onBackPressed();
+        finish();
     }
 
     /*
      * String of hexColor format can be either #RRGGBB (normal rgb) or #AARRGGBB (with transparent alpha value)
      */
-    public Bitmap makeMarkerIcon(String hexColor){
+    public Bitmap makeMarkerIcon(String hexColor) {
 
         Bitmap bmp = Bitmap.createBitmap(markerRadius, markerRadius + 25, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bmp);
@@ -263,7 +360,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
 
     }
 
-    public void catchButton(View view){
+    public void catchButton(View view) {
         HashMap<String, Object> tryCatchInfo = new HashMap<>();
         String playerObjID = getIntent().getStringExtra("playerObjID");
         tryCatchInfo.put("gameID", gameID);
@@ -280,145 +377,9 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         });
     }
 
-    public void talkButton(View view){
-        // Test method to add marker at player's location for now
-        /*
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-        // Create a criteria object to retrieve provider
-        Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-
-        // Get the name of the best provider
-        String provider = locationManager.getBestProvider(criteria, true);
-
-        // This invokes onLocationChanged method for given parameters
-        locationManager.requestLocationUpdates(provider, 1000, 1, this);
-
-        // Get Current Location
-        Location myLocation = locationManager.getLastKnownLocation(provider);
-
-        if(myLocation != null) {
-            // Create a LatLng object for the current location
-            LatLng latLng = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
-
-            // Show the current location in Google Map
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
-
-            mMap.addMarker(new MarkerOptions().position(latLng).title("MY POSITION!").snippet("WOLOLOLO"));
-        } else{
-            //TODO: Notify failure of getting users current position
-        }
-
-        LatLng latLng = new LatLng(loc.getLatitude(), loc.getLongitude());
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
-        mMap.addMarker(new MarkerOptions().position(latLng).title("MY POSITION!").snippet("WOLOLOLO").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-        */
-    }
-
-    public Location getLocation() {
-        LocationManager locationManager;
-        boolean isNetworkEnabled;
-        boolean isGPSEnabled;
-        //boolean canGetLocation;
-        Location location = null;
-
-        try {
-            locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
-
-            // getting GPS status
-            isGPSEnabled = locationManager
-                    .isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-            // getting network status
-            isNetworkEnabled = locationManager
-                    .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-            if (!isGPSEnabled && !isNetworkEnabled) {
-                // no network provider is enabled
-                Toast.makeText(getApplicationContext(), "NO LOCATION PROVIDER ENABLED!", Toast.LENGTH_LONG).show();
-            } else {
-
-                if (isGPSEnabled) {
-                    if (location == null) {
-                        locationManager.requestLocationUpdates(
-                                LocationManager.GPS_PROVIDER,
-                                1000,
-                                1, this);
-                        //Log.d("GPS", "GPS Enabled");
-                        if (locationManager != null) {
-                            location = locationManager
-                                    .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                            if (location != null) {
-                                latitude = location.getLatitude();
-                                longitude = location.getLongitude();
-                            }
-                        }
-                    }
-                }
-                //canGetLocation = true;
-                else if (isNetworkEnabled) {
-                    locationManager.requestLocationUpdates(
-                            LocationManager.NETWORK_PROVIDER,
-                            1000,
-                            1, this);
-                    //Log.d("Network", "Network Enabled");
-                    if (locationManager != null) {
-                        location = locationManager
-                                .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                        if (location != null) {
-                            latitude = location.getLatitude();
-                            longitude = location.getLongitude();
-                        }
-                    }
-                }
-
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if(location == null){
-            location = new Location("");
-            location.setLatitude(0);
-            location.setLongitude(0);
-            return location;
-        } else{
-            return location;
-        }
-
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        /* Disable for now
-        loc.setLatitude(location.getLatitude());
-        loc.setLongitude(location.getLongitude());
-        */
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
-
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        if(event.getAction() == MotionEvent.ACTION_DOWN){
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
             talkBtn.setPressed(true);
             talkBtn.setText("Recording...");
 
@@ -434,7 +395,8 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
             }
             mRecorder.start();
             return true;
-        } else if(event.getAction() == MotionEvent.ACTION_UP) {
+        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+            //Add timer for talk button here...
             talkBtn.setPressed(false);
             talkBtn.setText("Talk");
 
@@ -457,11 +419,17 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            //Upload soundfile to server
+            playedAudioFiles.add(data);
+            //Upload audio file to server
             try {
-                ParseObject game = ParseQuery.getQuery("Game").whereEqualTo("gameID", gameID).getFirst();//Hard coded, change
-                game.put("sound", data);
+                ParseObject game = ParseQuery.getQuery("Game").whereEqualTo("gameID", gameID).getFirst();
+                ParseRelation gameAudioRelation = game.getRelation("audioFiles");
+                ParseObject audio = new ParseObject("Audio");
+                audio.put("sound", data);
+                audio.put("timesListened", 1);
+                audio.save();
+                gameAudioRelation.add(audio);
+                //game.put("sound", data);
                 game.saveInBackground();
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -473,7 +441,9 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
 
     @Override
     public void onCompletion(MediaPlayer mp) {
+        mp.stop();
         mp.reset();
+        talkBtn.setEnabled(true);
     }
 
 }

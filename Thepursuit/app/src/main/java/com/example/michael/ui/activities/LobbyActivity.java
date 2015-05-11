@@ -38,7 +38,6 @@ public class LobbyActivity extends ActionBarActivity {
     Button playBtn;
     //@InjectView(R.id.readyButton) Button readyBtn;
     private Handler handler = new Handler();
-    //private Handler startGameHandler = new Handler();
     private boolean canStart = false;
     private boolean abort; //Bool to kill the thread
     private boolean update = true;
@@ -53,9 +52,7 @@ public class LobbyActivity extends ActionBarActivity {
         setContentView(R.layout.activity_lobby);
         ButterKnife.inject(this);
         isLobbyLeader = getIntent().getBooleanExtra("isLobbyLeader", false);
-        lobbyGameCodeView.setText("Your GameCode is: "+"\t"+"\t"+"\t"+"\t"+"\t"+"\t"+"\t"+"\t"+"\t"+"\t"+"\t"+"\t" + getIntent().getStringExtra("gameID").toString() + "\n" +
-                                    "The duration of the game is: " +"\t"+"\t"+"\t"+ getIntent().getStringExtra("durationTime") + "\n" +
-                                    "The radius of the game is: "+"\t"+"\t"+"\t"+"\t"+"\t"+"\t" + getIntent().getStringExtra("areaRadius"));
+        lobbyGameCodeView.setText("Game code: " + getIntent().getStringExtra("gameID").toString());
         adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_checked, getIntent().getStringArrayListExtra("players")); // Ugly for now, doesn't show connected players at FIRST!
         playerList.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
@@ -91,6 +88,9 @@ public class LobbyActivity extends ActionBarActivity {
                         }
                     } catch (ParseException e) {
                         e.printStackTrace();
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                        //onResume();
+                        //finish();
                         //TODO: Could use this to notify player that Game session has been DESTROYED SOMEHOW OO YEAH!!! :> (and maybe force them to change activity view back to previous)
                     }
                     handler.postDelayed(this, 3000);

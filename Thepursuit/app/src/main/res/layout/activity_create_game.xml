@@ -36,12 +36,13 @@
             android:layout_below="@+id/createGameText"
             android:layout_marginTop="110dp"
             android:checked="true"
+            android:textColor="@color/white"
             />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Area radius:"
+            android:text="Area radius: 1000m"
             android:textColor="@color/white"
             android:id="@+id/areaRadiusText"
             android:textSize="18dp"
@@ -54,7 +55,6 @@
 
         <SeekBar
             android:layout_width="wrap_content"
-            android:layout_toRightOf="@+id/areaRadiusText"
             android:layout_height="wrap_content"
             android:id="@+id/areaRadiusSeekBar"
             android:progress="4"
@@ -63,29 +63,26 @@
             android:layout_marginTop="20dp"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_alignLeft="@+id/createGameText"
-            android:layout_alignStart="@+id/createGameText"
-            />
+            android:layout_toEndOf="@+id/catchRadiusText"
+            android:layout_toRightOf="@+id/catchRadiusText" />
 
         <SeekBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/catchRadiusText"
             android:id="@+id/catchRadiusSeekBar"
             android:layout_below="@+id/areaRadiusSeekBar"
             android:layout_marginTop="10dp"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_alignLeft="@+id/createGameText"
-            android:layout_alignStart="@+id/createGameText"
             android:progress="4"
             android:max="9"
-            />
+            android:layout_alignLeft="@+id/areaRadiusSeekBar"
+            android:layout_alignStart="@+id/areaRadiusSeekBar" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Catch radius:"
+            android:text="Catch radius: 10m"
             android:id="@+id/catchRadiusText"
             android:textSize="18dp"
             android:layout_alignTop="@+id/catchRadiusSeekBar"
@@ -100,16 +97,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/timeSeekBar"
-            android:layout_toRightOf="@+id/timeText"
             android:layout_below="@+id/catchRadiusSeekBar"
             android:layout_marginTop="10dp"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_alignLeft="@+id/createGameText"
-            android:layout_alignStart="@+id/createGameText"
-            android:progress="4"
-            android:max="9"
-            />
+            android:progress="8"
+            android:max="28"
+            android:layout_alignLeft="@+id/catchRadiusSeekBar"
+            android:layout_alignStart="@+id/catchRadiusSeekBar" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -132,8 +127,8 @@
             android:layout_below="@+id/timeSeekBar"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_alignLeft="@+id/createGameText"
-            android:layout_alignStart="@+id/createGameText"
+            android:layout_alignLeft="@+id/catchRadiusSeekBar"
+            android:layout_alignStart="@+id/catchRadiusSeekBar"
             android:hint="Enter name"
             android:textColor="@color/white"
             android:gravity="center"

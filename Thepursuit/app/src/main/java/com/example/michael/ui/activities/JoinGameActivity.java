@@ -70,20 +70,6 @@ public class JoinGameActivity extends ActionBarActivity implements EditText.OnKe
         return super.onOptionsItemSelected(item);
     }
 
-    /*
-    @Override
-    public void onResume(){
-        super.onResume();
-        BusProvider.getBus().register(this);
-    }
-
-    @Override
-    public void onPause(){
-        super.onPause();
-        BusProvider.getBus().unregister(this);
-    }
-    */
-
     @Override
     public void onBackPressed(){
         try {
