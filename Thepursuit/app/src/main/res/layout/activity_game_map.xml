@@ -6,20 +6,36 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:keepScreenOn="true">
 
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:background="@color/white"
+        android:id="@+id/progressBar"
+        android:layout_alignLeft="@+id/map"
+        android:layout_alignStart="@+id/map"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/distanceView"
+        android:layout_alignRight="@+id/map"
+        android:layout_alignEnd="@+id/map"
+        android:layout_alignParentTop="true" />
+
     <TextView
         android:textStyle="bold"
         android:textSize="20dp"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         android:id="@+id/distanceView"
+        android:layout_above="@id/progressBar"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Prey: 100m"
-        android:gravity="center"/>
+        android:gravity="center_horizontal" />
+
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="370dp"
-        android:layout_height="550dp"
+        android:layout_height="400dp"
         android:layout_alignBottom="@+id/distanceView"
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="10dp"
@@ -38,6 +54,8 @@
 
         <Button
             android:id="@+id/catchButton"
+            android:background="@drawable/createbutton"
+            android:textSize="18dp"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
@@ -48,13 +66,14 @@
 
         <Button
             android:id="@+id/talkButton"
+            android:background="@drawable/joinbutton"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
+            android:textSize="18dp"
             android:text="Talk"
             android:textAllCaps="false"
             android:layout_alignParentRight="true"/>
 
     </LinearLayout>
-
 </RelativeLayout>
