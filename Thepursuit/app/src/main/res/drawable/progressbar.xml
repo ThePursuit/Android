@@ -17,7 +17,7 @@
                 <corners android:radius="5dip" />
                 <gradient
                     android:endColor="@color/LimeGreen"
-                    android:startColor="@color/Gold" />
+                    android:startColor="@color/Yellow" />
             </shape>
         </clip>
     </item>

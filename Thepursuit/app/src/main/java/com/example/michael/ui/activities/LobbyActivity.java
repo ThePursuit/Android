@@ -247,7 +247,7 @@ public class LobbyActivity extends ActionBarActivity implements GameStateDialog.
     public void rulesInfo(View view){
         FragmentManager fm = getFragmentManager();
         GameStateDialog dialog = new GameStateDialog();
-        dialog.setStatusText("Game rules: Catch the prey = win");
+        //dialog.setStatusText("Game rules: Catch the prey = win");
         dialog.show(fm, "Game rules");
     }
 
