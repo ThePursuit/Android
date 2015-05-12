@@ -172,16 +172,26 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
                         public void done(ParseObject game, ParseException e) {
                             if (e == null) {
                                 try {
-                                    for (ParseObject player : game.getRelation("players").getQuery().find()) {
-                                        ParseGeoPoint geo = (ParseGeoPoint) player.get("location");
-                                        if (player.getBoolean("isPrey")) {
-                                            preyLoc.setLatitude(geo.getLatitude());
-                                            preyLoc.setLongitude(geo.getLongitude());
-                                        } else if (!player.getObjectId().equals(getIntent().getStringExtra("playerObjID"))) {
-                                            String playerName = player.get("name").toString();
-                                            LatLng latLng = new LatLng(geo.getLatitude(), geo.getLongitude());
-                                            MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(playerName).icon(BitmapDescriptorFactory.fromBitmap(makeMarkerIcon(player.get("playerColor").toString())));
-                                            markers.put(playerName, markerOptions);
+                                    if(game.getRelation("state").getQuery().getFirst().getBoolean("preyCaught")){
+                                        update = false;
+                                        if(isPrey){
+                                            dialog.setStatusText("You LOST! :<");
+                                        } else{
+                                            dialog.setStatusText("Someone has caught the prey, your team WON! :) yada yada");
+                                        }
+                                        dialog.show(fragmentManager, "Game has finished!");
+                                    } else{
+                                        for (ParseObject player : game.getRelation("players").getQuery().find()) {
+                                            ParseGeoPoint geo = (ParseGeoPoint) player.get("location");
+                                            if (player.getBoolean("isPrey")) {
+                                                preyLoc.setLatitude(geo.getLatitude());
+                                                preyLoc.setLongitude(geo.getLongitude());
+                                            } else if (!player.getObjectId().equals(getIntent().getStringExtra("playerObjID"))) {
+                                                String playerName = player.get("name").toString();
+                                                LatLng latLng = new LatLng(geo.getLatitude(), geo.getLongitude());
+                                                MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(playerName).icon(BitmapDescriptorFactory.fromBitmap(makeMarkerIcon(player.get("playerColor").toString())));
+                                                markers.put(playerName, markerOptions);
+                                            }
                                         }
                                     }
                                 } catch (ParseException e1) {
@@ -373,6 +383,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         paint.setColor(Color.parseColor(hexColor));
         paint.setStyle(Paint.Style.FILL);
 
+        /*
         // the triangle laid under the circle
         int pointedness = 20;
         Path path = new Path();
@@ -381,6 +392,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         path.lineTo(markerRadius / 2 + pointedness, markerRadius - 10);
         path.lineTo(markerRadius / 2 - pointedness, markerRadius - 10);
         canvas.drawPath(path, paint);
+        */
 
         // circle background
         RectF rect = new RectF(0, 0, markerRadius, markerRadius);
@@ -399,8 +411,9 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
             public void done(ParseObject game, ParseException e) {
                 if (e == null) {
                     update = false;
-                    dialog.show(fragmentManager, "Title");
-                    Toast.makeText(getApplicationContext(), "CAUGHT!", Toast.LENGTH_LONG).show();
+                    dialog.setStatusText("Congratulations, you caught the prey! :D");
+                    dialog.show(fragmentManager, "Game has finished!");
+                    //Toast.makeText(getApplicationContext(), "CAUGHT!", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getApplicationContext(), "You're not close enough!", Toast.LENGTH_LONG).show();
                     catchBtn.setEnabled(false);

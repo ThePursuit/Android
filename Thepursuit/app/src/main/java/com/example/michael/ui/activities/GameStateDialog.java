@@ -1,12 +1,15 @@
 package com.example.michael.ui.activities;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.DialogFragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.michael.ui.R;
 
@@ -14,8 +17,16 @@ import com.example.michael.ui.R;
  * Created by Michael on 2015-05-11.
  */
 public class GameStateDialog extends DialogFragment implements View.OnClickListener {
+    private boolean hasSetText = false;
+    private String statusText;
+    private TextView infoTextView;
     private Button okButton;
     Communicator communicator;
+
+    public void setStatusText(String statusText) {
+        this.statusText = statusText;
+        this.hasSetText = true;
+    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -28,8 +39,12 @@ public class GameStateDialog extends DialogFragment implements View.OnClickListe
         View view = inflater.inflate(R.layout.dialog_game_state, null);
         okButton = (Button) view.findViewById(R.id.okButton);
         okButton.setOnClickListener(this);
+        if(hasSetText){
+            infoTextView = (TextView) view.findViewById(R.id.infoTextView);
+            infoTextView.setText(statusText);
+        }
         setCancelable(false);
-        getDialog().setTitle("The game has finished!");
+        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         return view;
     }
 
