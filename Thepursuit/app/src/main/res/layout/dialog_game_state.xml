@@ -1,17 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:scrollbars="vertical"
     android:background="@drawable/gradient">
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="30dp"
+        android:id="@+id/heading"
+        android:textSize="28dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:text="Rules of The Pursuit"/>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/firstInfo"
+        android:textSize="16dp"
+        android:layout_below="@id/heading"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="10dp"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:text="The aim of the game is for the hunters to catch the prey.If you’re not the prey then your job is to catch the prey with the help of all the other players that also isn’t the prey. Simple enough!"
+        />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        android:text="As the prey:"
+        android:id="@+id/asPrey"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="8dp"
+        android:layout_below="@id/firstInfo"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:textColor="@color/white"
+        />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="To win the game your job is not to be caught. The other players can see and hear each other, but they only know their distance to you. This means you have an advantage with seeing all of them on the map. You lose when a hunter presses the catch-button at a close enough proximity to you. When the time has lapsed and you’re not caught, you win!"
+        android:id="@+id/preyRules"
+        android:textSize="16dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="2dp"
+        android:layout_below="@id/asPrey"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:textColor="@color/white"
+        />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="You won!"
-        android:id="@+id/infoTextView"
-        android:layout_alignParentTop="true"
+        android:text="As the hunters:"
+        android:id="@+id/asHunters"
+        android:textSize="18dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:textStyle="bold"
+        android:paddingTop="8dp"
+        android:layout_below="@+id/preyRules"
         android:layout_centerHorizontal="true"
-        android:textColor="@color/white"/>
+        android:gravity="center"
+        android:textColor="@color/white"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="To win the game your job is to work as a team to catch the prey. You do this by pressing the catch-button at a close enough proximity to the prey. You can communicate with all other players and see them on the map, except for the prey. The prey can however see all of you. You have the duration of the game to find the prey, otherwise the prey wins!"
+        android:id="@+id/hunterRules"
+        android:textSize="16dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="2dp"
+        android:layout_below="@id/asHunters"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:textColor="@color/white"
+        />
+
 
     <Button
         android:layout_width="wrap_content"
@@ -20,8 +106,8 @@
         android:background="@drawable/joinbutton"
         android:id="@+id/okButton"
         style="?android:attr/borderlessButtonStyle"
-        android:layout_below="@+id/infoTextView"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         android:layout_marginTop="200dp"
         android:layout_alignParentRight="true"

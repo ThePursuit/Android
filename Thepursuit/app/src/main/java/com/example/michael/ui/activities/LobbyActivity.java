@@ -55,7 +55,8 @@ public class LobbyActivity extends ActionBarActivity implements GameStateDialog.
         ButterKnife.inject(this);
         nickName = getIntent().getStringExtra("nickName");
         isLobbyLeader = getIntent().getBooleanExtra("isLobbyLeader", false);
-        lobbyGameCodeView.setText("Game code: " + getIntent().getStringExtra("gameID").toString() + "\nKappa");
+        lobbyGameCodeView.setText("Game code: " + getIntent().getStringExtra("gameID").toString() + "\n"
+                                     + "The duration of the game is: " + "\n" + "The radius of the game is: ");;
         adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_checked, getIntent().getStringArrayListExtra("players")); // Ugly for now, doesn't show connected players at FIRST!
         playerList.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
@@ -102,7 +103,6 @@ public class LobbyActivity extends ActionBarActivity implements GameStateDialog.
         }, 3000);
 
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
