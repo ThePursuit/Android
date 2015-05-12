@@ -25,6 +25,7 @@ public class CountDownActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_count_down);
+        
         ButterKnife.inject(this);
         timerText.setText(String.valueOf(startTime/1000));
         cdt = new CountDownTimer(startTime, interval) {

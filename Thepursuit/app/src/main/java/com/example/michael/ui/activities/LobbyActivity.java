@@ -212,9 +212,9 @@ public class LobbyActivity extends ActionBarActivity {
                                 ParseObject gameState = ParseQuery.getQuery("Game").whereEqualTo("gameID", gameID).getFirst().getRelation("state").getQuery().getFirst();
                                 if(!gameState.getBoolean("isPlaying")){
                                     handler.postDelayed(this, 1000);
-                                    Toast.makeText(getApplicationContext(), gameState.getBoolean("isPlaying")+"", Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(getApplicationContext(), gameState.getBoolean("isPlaying")+"", Toast.LENGTH_SHORT).show();
                                 } else{
-                                    Toast.makeText(getApplicationContext(), gameState.getBoolean("isPlaying")+"", Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(getApplicationContext(), gameState.getBoolean("isPlaying")+"", Toast.LENGTH_SHORT).show();
                                     ParseObject playerObj = ParseQuery.getQuery("Player").get(getIntent().getStringExtra("playerObjID"));
                                     intent.putExtra("isPrey", playerObj.getBoolean("isPrey"));
                                     intent.putExtra("playerObjID", getIntent().getStringExtra("playerObjID"));
