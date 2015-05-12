@@ -40,7 +40,7 @@ public class GameStateDialog extends DialogFragment implements View.OnClickListe
         okButton = (Button) view.findViewById(R.id.okButton);
         okButton.setOnClickListener(this);
         if(hasSetText){
-            infoTextView = (TextView) view.findViewById(R.id.infoTextView);
+            infoTextView = (TextView) view.findViewById(R.id.heading);
             infoTextView.setText(statusText);
         }
         setCancelable(false);

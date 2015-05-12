@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android" android:oneshot="false">
+
+    <item android:drawable="@color/navy" android:duration="500" />
+    <item android:drawable="@color/MediumBlue" android:duration="500" />
+    <item android:drawable="@color/Blue" android:duration="500" />
+    <item android:drawable="@color/RoyalBlue" android:duration="500" />
+    <item android:drawable="@color/SteelBlue" android:duration="500" />
+    <item android:drawable="@color/teal" android:duration="500" />
+    <item android:drawable="@color/DarkCyan" android:duration="500" />
+    <item android:drawable="@color/SeaGreen" android:duration="500" />
+    <item android:drawable="@color/MediumSeaGreen" android:duration="500" />
+    <item android:drawable="@color/LimeGreen" android:duration="500" />
+    <item android:drawable="@color/Lime" android:duration="500" />
+    <item android:drawable="@color/LawnGreen" android:duration="500" />
+    <item android:drawable="@color/GreenYellow" android:duration="500" />
+    <item android:drawable="@color/yellow" android:duration="500" />
+    <item android:drawable="@color/Gold" android:duration="500" />
+    <item android:drawable="@color/Orange" android:duration="500" />
+    <item android:drawable="@color/DarkOrange" android:duration="500" />
+    <item android:drawable="@color/Coral" android:duration="500" />
+    <item android:drawable="@color/Tomato" android:duration="500" />
+    <item android:drawable="@color/OrangeRed" android:duration="500" />
+    <item android:drawable="@color/Red" android:duration="500" />
+    <item android:drawable="@color/DeepPink" android:duration="500" />
+    <item android:drawable="@color/Magenta" android:duration="500" />
+    <item android:drawable="@color/MediumOrchid" android:duration="500" />
+    <item android:drawable="@color/DarkOrchid" android:duration="500" />
+    <item android:drawable="@color/DarkViolet" android:duration="500" />
+    <item android:drawable="@color/DarkMagenta" android:duration="500" />
+    <item android:drawable="@color/Purple" android:duration="500" />
+    <item android:drawable="@color/Indigo" android:duration="500" />
+    <item android:drawable="@color/DarkSlateBlue" android:duration="500" />
+    <item android:drawable="@color/navy" android:duration="500" />
+    <item android:drawable="@color/MediumBlue" android:duration="500" />
+    <item android:drawable="@color/Blue" android:duration="500" />
+    <item android:drawable="@color/RoyalBlue" android:duration="500" />
+    <item android:drawable="@color/SteelBlue" android:duration="500" />
+    <item android:drawable="@color/teal" android:duration="500" />
+    <item android:drawable="@color/DarkCyan" android:duration="500" />
+    <item android:drawable="@color/SeaGreen" android:duration="500" />
+    <item android:drawable="@color/MediumSeaGreen" android:duration="500" />
+    <item android:drawable="@color/LimeGreen" android:duration="500" />
+    <item android:drawable="@color/Lime" android:duration="500" />
+    <item android:drawable="@color/LawnGreen" android:duration="500" />
+    <item android:drawable="@color/GreenYellow" android:duration="500" />
+    <item android:drawable="@color/yellow" android:duration="500" />
+    <item android:drawable="@color/Gold" android:duration="500" />
+    <item android:drawable="@color/Orange" android:duration="500" />
+    <item android:drawable="@color/DarkOrange" android:duration="500" />
+    <item android:drawable="@color/Coral" android:duration="500" />
+    <item android:drawable="@color/Tomato" android:duration="500" />
+    <item android:drawable="@color/OrangeRed" android:duration="500" />
+    <item android:drawable="@color/Red" android:duration="500" />
+    <item android:drawable="@color/DeepPink" android:duration="500" />
+    <item android:drawable="@color/Magenta" android:duration="500" />
+    <item android:drawable="@color/MediumOrchid" android:duration="500" />
+    <item android:drawable="@color/DarkOrchid" android:duration="500" />
+    <item android:drawable="@color/DarkViolet" android:duration="500" />
+    <item android:drawable="@color/DarkMagenta" android:duration="500" />
+    <item android:drawable="@color/Purple" android:duration="500" />
+    <item android:drawable="@color/Indigo" android:duration="500" />
+    <item android:drawable="@color/DarkSlateBlue" android:duration="500" />
+
+</animation-list>

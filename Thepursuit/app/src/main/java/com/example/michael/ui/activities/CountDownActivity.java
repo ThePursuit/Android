@@ -1,12 +1,15 @@
 package com.example.michael.ui.activities;
 
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.CountDownTimer;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.michael.ui.R;
@@ -18,14 +21,19 @@ public class CountDownActivity extends ActionBarActivity {
 
     @InjectView(R.id.timerText) TextView timerText;
     private CountDownTimer cdt;
-    private final long startTime = 10000;
+    private final long startTime = 30000;
     private final long interval = 1000;
+    AnimationDrawable drawable;
+    private ProgressBar progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_count_down);
-        
+        View parent = findViewById(R.id.timerText);
+        drawable = (AnimationDrawable) getResources().getDrawable(R.drawable.countdown);
+        parent.setBackground(drawable);
         ButterKnife.inject(this);
         timerText.setText(String.valueOf(startTime/1000));
         cdt = new CountDownTimer(startTime, interval) {
@@ -49,6 +57,13 @@ public class CountDownActivity extends ActionBarActivity {
         cdt.start();
     }
 
+    @Override
+    public void onWindowFocusChanged(boolean gained){
+        super.onWindowFocusChanged(gained);
+        if(gained){
+            drawable.start();
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
