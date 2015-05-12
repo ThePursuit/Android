@@ -42,6 +42,7 @@ public class CountDownActivity extends ActionBarActivity {
                 intent.putExtra("nickName", getIntent().getStringExtra("nickName"));
                 intent.putExtra("playerObjID", getIntent().getStringExtra("playerObjID"));
                 intent.putExtra("isPrey", getIntent().getBooleanExtra("isPrey", false));
+                intent.putExtra("isLobbyLeader", getIntent().getBooleanExtra("isLobbyLeader", false));
                 startActivity(intent);
                 finish();
             }

@@ -1,5 +1,6 @@
 package com.example.michael.ui.activities;
 
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,7 +29,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 
-public class LobbyActivity extends ActionBarActivity {
+public class LobbyActivity extends ActionBarActivity implements GameStateDialog.Communicator {
 
     @InjectView(R.id.lobbyGameCodeView)
     TextView lobbyGameCodeView;
@@ -54,7 +55,7 @@ public class LobbyActivity extends ActionBarActivity {
         ButterKnife.inject(this);
         nickName = getIntent().getStringExtra("nickName");
         isLobbyLeader = getIntent().getBooleanExtra("isLobbyLeader", false);
-        lobbyGameCodeView.setText("Game code: " + getIntent().getStringExtra("gameID").toString());
+        lobbyGameCodeView.setText("Game code: " + getIntent().getStringExtra("gameID").toString() + "\nKappa");
         adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_checked, getIntent().getStringArrayListExtra("players")); // Ugly for now, doesn't show connected players at FIRST!
         playerList.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
@@ -155,7 +156,7 @@ public class LobbyActivity extends ActionBarActivity {
             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
         }
 
-        if (playBtn.getText().toString().equals("Play")) {
+        if (playBtn.getText().toString().equals("Ready")) {
             abort = false;
             playBtn.setText("Waiting...");
             final String gameID = getIntent().getStringExtra("gameID");
@@ -163,6 +164,7 @@ public class LobbyActivity extends ActionBarActivity {
             intent.putExtra("gameID", gameID);
             intent.putExtra("nickName", nickName);
             intent.putExtra("playerObjID", getIntent().getStringExtra("playerObjID"));
+            intent.putExtra("isLobbyLeader", isLobbyLeader);
             playerObj.put("isReady", true);
             playerObj.saveInBackground();
 
@@ -172,7 +174,7 @@ public class LobbyActivity extends ActionBarActivity {
                     if (!canStart) {
                         try {
                             canStart = true;
-                            for (ParseObject player : ParseQuery.getQuery("Game").whereEqualTo("gameID", getIntent().getStringExtra("gameID").toString()).getFirst().getRelation("players").getQuery().find()) {
+                            for (ParseObject player : ParseQuery.getQuery("Game").whereEqualTo("gameID", gameID).getFirst().getRelation("players").getQuery().find()) {
                                 if (!player.getBoolean("isReady")) {
                                     canStart = false;
                                     break;
@@ -240,6 +242,18 @@ public class LobbyActivity extends ActionBarActivity {
             playBtn.setText("Play");
         }
 
+    }
+
+    public void rulesInfo(View view){
+        FragmentManager fm = getFragmentManager();
+        GameStateDialog dialog = new GameStateDialog();
+        dialog.setStatusText("Game rules: Catch the prey = win");
+        dialog.show(fm, "Game rules");
+    }
+
+    @Override
+    public void onDialogMessage() {
+        //This is where you get after you've pressed Ok on the dialog and the dialog has been dismissed.
     }
 
     /*

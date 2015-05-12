@@ -75,7 +75,7 @@
         android:textAllCaps="false"
         android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
-        android:onClick="playGame"
+        android:onClick="rulesInfo"
         android:layout_alignLeft="@+id/playButton"
         />
 
@@ -84,7 +84,7 @@
         android:layout_width="115dp"
         android:layout_height="wrap_content"
         android:textSize="18dp"
-        android:text="I'm Ready"
+        android:text="Ready"
         android:id="@+id/playButton"
         android:textAllCaps="false"
         android:layout_alignParentRight="true"

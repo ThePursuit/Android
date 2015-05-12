@@ -1,34 +1,44 @@
-<RelativeLayout
-    android:layout_height="fill_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:weightSum="1"
+    android:layout_height="fill_parent"
     android:background="@drawable/gradient"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:keepScreenOn="true">
+    android:keepScreenOn="true"
+    android:weightSum="1">
 
     <TextView
-        android:textStyle="bold"
-        android:textSize="20dp"
-        android:textColor="@color/white"
         android:id="@+id/distanceView"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:text="Prey: 100m"
-        android:gravity="center"/>
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/timerProgress"
+        android:max="30"
+        android:progress="30"
+        android:progressDrawable="@drawable/progressbar"
+        android:minHeight="5dp"
+        android:maxHeight="5dp"
+        android:layout_above="@+id/map"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="370dp"
-        android:layout_height="550dp"
-        android:layout_alignBottom="@+id/distanceView"
-        android:layout_marginBottom="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
         android:id="@+id/map"
-        tools:context=".MapsActivity"
         android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/buttonLayout"
+        android:layout_below="@+id/distanceView"
+        tools:context=".MapsActivity" />
 
     <LinearLayout
         android:id="@+id/buttonLayout"
@@ -40,20 +50,20 @@
             android:id="@+id/catchButton"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:text="Catch"
-            android:textAllCaps="false"
             android:layout_alignParentLeft="true"
-            android:onClick="catchButton"/>
+            android:layout_weight="0.5"
+            android:onClick="catchButton"
+            android:text="Catch"
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/talkButton"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
             android:layout_weight="0.5"
             android:text="Talk"
-            android:textAllCaps="false"
-            android:layout_alignParentRight="true"/>
+            android:textAllCaps="false" />
 
     </LinearLayout>
 
