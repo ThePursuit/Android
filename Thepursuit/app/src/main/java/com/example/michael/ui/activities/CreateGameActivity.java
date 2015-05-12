@@ -137,6 +137,8 @@ public class CreateGameActivity extends ActionBarActivity implements SeekBar.OnS
                         intent.putExtra("nickName", nickNameText.getText().toString());
                         intent.putExtra("playerObjID", playerObj.getObjectId());
                         intent.putExtra("isLobbyLeader", true);
+                        intent.putExtra("gameDuration", timeProgress);
+                        intent.putExtra("catchRadius", catchRadiusProgress);
                         startActivity(intent);
                         finish();
                     } catch (ParseException e1) {

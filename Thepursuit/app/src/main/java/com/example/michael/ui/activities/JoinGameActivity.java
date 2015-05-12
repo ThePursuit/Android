@@ -113,12 +113,15 @@ public class JoinGameActivity extends ActionBarActivity implements EditText.OnKe
                         for (ParseObject player : game.getRelation("players").getQuery().find()) {
                             players.add(player.get("name").toString());
                         }
+                        ParseObject rules = game.getRelation("rules").getQuery().getFirst();
                         Intent intent = new Intent(JoinGameActivity.this, LobbyActivity.class);
                         intent.putStringArrayListExtra("players", players);
                         intent.putExtra("gameID", gameID);
                         intent.putExtra("nickName", nickName); // May be redundant. Check for other intents.
                         intent.putExtra("playerObjID", playerObjID);
                         intent.putExtra("isLobbyLeader", false);
+                        intent.putExtra("gameDuration", rules.getInt("durationTime"));
+                        intent.putExtra("catchRadius", rules.getInt("catchRadius"));
                         startActivity(intent);
                         finish();
                     } catch (ParseException e1) {

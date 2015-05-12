@@ -23,7 +23,7 @@ import java.util.HashMap;
 public class StartActivity extends ActionBarActivity implements GameStateDialog.Communicator {
     private CountDownTimer cdt;
     private final long startTime = 30000;
-    private final long interval = 1000;
+    private final long interval = 100;
     private ProgressBar pb;
 
     @Override
@@ -34,7 +34,7 @@ public class StartActivity extends ActionBarActivity implements GameStateDialog.
         cdt = new CountDownTimer(startTime, interval) {
             @Override
             public void onTick(long millisUntilFinished) {
-                pb.setProgress((int) (millisUntilFinished / 1000));
+                pb.setProgress(pb.getProgress()-1);
             }
 
             @Override

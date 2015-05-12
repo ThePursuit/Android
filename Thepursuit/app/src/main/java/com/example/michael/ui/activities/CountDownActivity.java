@@ -23,6 +23,8 @@ public class CountDownActivity extends ActionBarActivity {
     private CountDownTimer cdt;
     private final long startTime = 30000;
     private final long interval = 1000;
+    private int gameDuration;
+    private int catchRadius;
     AnimationDrawable drawable;
     private ProgressBar progress;
 
@@ -35,6 +37,8 @@ public class CountDownActivity extends ActionBarActivity {
         drawable = (AnimationDrawable) getResources().getDrawable(R.drawable.countdown);
         parent.setBackground(drawable);
         ButterKnife.inject(this);
+        gameDuration = getIntent().getIntExtra("gameDuration", 0);
+        catchRadius = getIntent().getIntExtra("catchRadius", 0);
         timerText.setText(String.valueOf(startTime/1000));
         cdt = new CountDownTimer(startTime, interval) {
             @Override
@@ -51,6 +55,8 @@ public class CountDownActivity extends ActionBarActivity {
                 intent.putExtra("playerObjID", getIntent().getStringExtra("playerObjID"));
                 intent.putExtra("isPrey", getIntent().getBooleanExtra("isPrey", false));
                 intent.putExtra("isLobbyLeader", getIntent().getBooleanExtra("isLobbyLeader", false));
+                intent.putExtra("gameDuration", gameDuration);
+                intent.putExtra("catchRadius", catchRadius);
                 startActivity(intent);
                 finish();
             }

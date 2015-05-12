@@ -47,6 +47,9 @@ public class LobbyActivity extends ActionBarActivity implements GameStateDialog.
     private ArrayList<String> players = new ArrayList<>();
     private ArrayList<Integer> indices = new ArrayList<>();
     private String nickName;
+    private String gameID;
+    private int gameDuration;
+    private int catchRadius;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +57,12 @@ public class LobbyActivity extends ActionBarActivity implements GameStateDialog.
         setContentView(R.layout.activity_lobby);
         ButterKnife.inject(this);
         nickName = getIntent().getStringExtra("nickName");
+        gameID = getIntent().getStringExtra("gameID");
         isLobbyLeader = getIntent().getBooleanExtra("isLobbyLeader", false);
-        lobbyGameCodeView.setText("Game code: " + getIntent().getStringExtra("gameID").toString() + "\n"
-                                     + "The duration of the game is: " + "\n" + "The radius of the game is: ");;
+        gameDuration = getIntent().getIntExtra("gameDuration", 0);
+        catchRadius = getIntent().getIntExtra("catchRadius", 0);
+        lobbyGameCodeView.setText("Game code: " + gameID + "\n"
+                                     + "The duration of the game is: " + gameDuration + "m\n" + "The catch radius of the game is: " + catchRadius + "m");;
         adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_checked, getIntent().getStringArrayListExtra("players")); // Ugly for now, doesn't show connected players at FIRST!
         playerList.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
@@ -77,7 +83,7 @@ public class LobbyActivity extends ActionBarActivity implements GameStateDialog.
                 if (update) {
                     try {
                         int index = 0;
-                        for (ParseObject player : ParseQuery.getQuery("Game").whereEqualTo("gameID", getIntent().getStringExtra("gameID").toString()).getFirst().getRelation("players").getQuery().find()) {
+                        for (ParseObject player : ParseQuery.getQuery("Game").whereEqualTo("gameID", gameID).getFirst().getRelation("players").getQuery().find()) {
                             players.add(player.get("name").toString());
                             if (player.getBoolean("isReady")) {
                                 indices.add(index);
@@ -159,12 +165,13 @@ public class LobbyActivity extends ActionBarActivity implements GameStateDialog.
         if (playBtn.getText().toString().equals("Ready")) {
             abort = false;
             playBtn.setText("Waiting...");
-            final String gameID = getIntent().getStringExtra("gameID");
             final Intent intent = new Intent(this, CountDownActivity.class);
             intent.putExtra("gameID", gameID);
             intent.putExtra("nickName", nickName);
             intent.putExtra("playerObjID", getIntent().getStringExtra("playerObjID"));
             intent.putExtra("isLobbyLeader", isLobbyLeader);
+            intent.putExtra("gameDuration", gameDuration);
+            intent.putExtra("catchRadius", catchRadius);
             playerObj.put("isReady", true);
             playerObj.saveInBackground();
 

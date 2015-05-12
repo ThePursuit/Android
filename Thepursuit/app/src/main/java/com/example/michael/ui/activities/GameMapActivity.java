@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.RectF;
 import android.location.Location;
 import android.media.MediaPlayer;
@@ -82,7 +81,8 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
     private Thread audioThread;
     private long updateLocationInterval;
     private int distanceToPrey;
-    private CountDownTimer cdt;
+    private CountDownTimer gameDurationCDT;
+    private CountDownTimer catchBtnBlockCDT;
     private final long startTime = 5000;
     private final long interval = 1000;
     private String nickName;
@@ -90,8 +90,10 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
     private GameStateDialog dialog;
     private boolean isLobbyLeader;
     private ProgressBar pb;
-    private LocationProvider lc;
+    private LocationProvider locationProvider;
     public static final String TAG = GameMapActivity.class.getSimpleName();
+    private int gameDuration;
+    private int catchRadius;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,24 +101,17 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         setContentView(R.layout.activity_game_map);
         ButterKnife.inject(this);
         setUpMapIfNeeded();
-        lc = new LocationProvider(this, this);
-        lc.connect();
-
+        locationProvider = new LocationProvider(this, this);
         pb = (ProgressBar) findViewById(R.id.timerProgress);
-        cdt = new CountDownTimer(30000, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                pb.setProgress((int) (millisUntilFinished / 1000));
-            }
-
-            @Override
-            public void onFinish() {
-                pb.setProgress(0);
-                Toast.makeText(getApplicationContext(), "Kappa", Toast.LENGTH_LONG).show();
-            }
-        };
-        cdt.start();
-
+        talkBtn.setOnTouchListener(this);
+        mPlayer = new MediaPlayer();
+        mPlayer.setOnCompletionListener(this);
+        preyLoc = new Location("");
+        preyLoc.setLatitude(0);
+        preyLoc.setLongitude(0);
+        loc = new Location("");
+        loc.setLatitude(0);
+        loc.setLongitude(0);
         fragmentManager = getFragmentManager();
         dialog = new GameStateDialog();
         mFileName = getFilesDir().getAbsolutePath();
@@ -124,21 +119,59 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         gameID = getIntent().getStringExtra("gameID");
         nickName = getIntent().getStringExtra("nickName");
         isLobbyLeader = getIntent().getBooleanExtra("isLobbyLeader", false);
-        talkBtn.setOnTouchListener(this);
-        mPlayer = new MediaPlayer();
-        mPlayer.setOnCompletionListener(this);
-        preyLoc = new Location("");
-        preyLoc.setLatitude(0);
-        preyLoc.setLongitude(0);
+        gameDuration = 30;//In seconds
+        catchRadius = getIntent().getIntExtra("catchRadius", 0);
+
+        pb.setMax(gameDuration*10);
+        pb.setProgress(gameDuration*10);
+
+        catchBtnBlockCDT = new CountDownTimer(startTime, interval) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                catchBtn.setText(String.valueOf(millisUntilFinished / 1000));
+            }
+
+            @Override
+            public void onFinish() {
+                catchBtn.setText("Catch");
+                catchBtn.setEnabled(true);
+            }
+        };
+
+        gameDurationCDT = new CountDownTimer(gameDuration*1000, 100) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                pb.setProgress(pb.getProgress()-1);
+            }
+
+            @Override
+            public void onFinish() {
+                pb.setProgress(0);
+                HashMap<String, Object> endGameInfo = new HashMap<>();
+                endGameInfo.put("gameID", gameID);
+
+                ParseCloud.callFunctionInBackground("endGame", endGameInfo, new FunctionCallback<ParseObject>() {
+                    @Override
+                    public void done(ParseObject game, ParseException e) {
+                        if (e == null) {
+
+                        } else {
+                            //TODO: Error msg...
+                            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+
+            }
+        };
+        gameDurationCDT.start();
+
         update = true; //Make it true elsewhere...
         markerRadius = 25;
         markers = new HashMap<>();
         playedAudioFiles = new ArrayList<>();
         playerObjID = getIntent().getStringExtra("playerObjID");
         isPrey = getIntent().getBooleanExtra("isPrey", false);
-        loc = new Location("");
-        loc.setLatitude(0);
-        loc.setLongitude(0);
         updateLocationInterval = 1000;
         if (isPrey) {
             catchBtn.setEnabled(false);
@@ -279,25 +312,10 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
             }
         };
 
-        /*
-        cdt = new CountDownTimer(startTime, interval) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                catchBtn.setText(String.valueOf(millisUntilFinished / 1000));
-            }
-
-            @Override
-            public void onFinish() {
-                catchBtn.setText("Catch");
-                catchBtn.setEnabled(true);
-            }
-        };
-        */
-
         locationThread = new Thread(updateLocation);
         audioThread = new Thread(retrieveAudio);
         //locationThread.start();
-        //audioThread.start();
+        audioThread.start();
     }
 
     public void getMyLocation() {
@@ -314,6 +332,13 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
     public void onResume() {
         super.onResume();
         setUpMapIfNeeded();
+        locationProvider.connect();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        locationProvider.disconnect();
     }
 
     /**
@@ -391,6 +416,8 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
     @Override
     public void onBackPressed() {
         update = false;
+        locationProvider.disconnect();
+        mPlayer.stop();
         super.onBackPressed();
         finish();
     }
@@ -435,14 +462,16 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
             @Override
             public void done(ParseObject game, ParseException e) {
                 if (e == null) {
-                    //update = false;
+                    update = false;
+                    locationProvider.disconnect();
                     //dialog.setStatusText("Congratulations, you caught the prey! :D");
                     //dialog.show(fragmentManager, "Game has finished!");
                     //Toast.makeText(getApplicationContext(), "CAUGHT!", Toast.LENGTH_LONG).show();
+                    gameDurationCDT.cancel();
                 } else {
                     Toast.makeText(getApplicationContext(), "You're not close enough!", Toast.LENGTH_LONG).show();
                     catchBtn.setEnabled(false);
-                    cdt.start();
+                    catchBtnBlockCDT.start();
                 }
             }
         });
@@ -529,6 +558,8 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
             intent.putExtra("nickName", nickName); // May be redundant. Check for other intents.
             intent.putExtra("playerObjID", playerObjID);
             intent.putExtra("isLobbyLeader", isLobbyLeader);
+            intent.putExtra("gameDuration", gameDuration);
+            intent.putExtra("catchRadius", catchRadius);
             startActivity(intent);
             finish();
         } catch (ParseException e1) {
@@ -539,19 +570,90 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         }
     }
 
+    public void drawMarkers() {
+        mMap.clear();
+        for (MarkerOptions mo : markers.values()) {
+            mMap.addMarker(mo);
+        }
+        if (isPrey) {
+            distanceView.setText("You're the Prey, Hide!");//Create separate methods to call when you're prey and so on...
+        } else {
+            distanceToPrey = Math.round(loc.distanceTo(preyLoc));
+            if (distanceToPrey < 10) {
+                distanceView.setText("You're very close!");
+            } else {
+                distanceView.setText("Prey: " + distanceToPrey + "m");
+            }
+
+                    /*
+                    //Change update frequency
+                    if (distanceToPrey > 100) {
+                        updateLocationInterval = 2000;
+                    } else if (distanceToPrey > 20) {
+                        updateLocationInterval = 1000;
+                    } else {
+                        updateLocationInterval = 500;
+                    }
+                    */
+        }
+    }
+
     @Override
-    public void handleNewLocation(Location location) {
+    public void handleNewLocation(final Location location) {
         Log.d(TAG, location.toString());
+        loc = location;
 
-        double currentLatitude = location.getLatitude();
-        double currentLongitude = location.getLongitude();
-        LatLng latLng = new LatLng(currentLatitude, currentLongitude);
+        HashMap<String, Object> updateInfo = new HashMap<>();
+        updateInfo.put("gameID", gameID);
+        updateInfo.put("playerObjID", getIntent().getStringExtra("playerObjID"));
+        updateInfo.put("latitude", loc.getLatitude());
+        updateInfo.put("longitude", loc.getLongitude());
 
-        //mMap.addMarker(new MarkerOptions().position(new LatLng(currentLatitude, currentLongitude)).title("Current Location"));
-        MarkerOptions options = new MarkerOptions()
-                .position(latLng)
-                .title("I am here!");
-        mMap.addMarker(options);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        ParseCloud.callFunctionInBackground("updateGame", updateInfo, new FunctionCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject game, ParseException e) {
+                if (e == null) {
+                    try {
+                        if (!game.getRelation("state").getQuery().getFirst().getBoolean("isPlaying")) {
+                            update = false;
+                            locationProvider.disconnect();
+                            if(game.getRelation("state").getQuery().getFirst().getBoolean("preyCaught")){
+                                if (isPrey) {
+                                    dialog.setStatusText("You LOSE! You won't survive a zombie apocalypse :<");
+                                } else {
+                                    dialog.setStatusText("Someone has caught the prey, you WIN! :)");
+                                }
+                            } else{
+                                if (isPrey) {
+                                    dialog.setStatusText("TIME OUT! They couldn't find you. You WIN! :)");
+                                } else {
+                                    dialog.setStatusText("TIME OUT! You guys suck at hunting. You LOSE! >:(");
+                                }
+                            }
+                            dialog.show(fragmentManager, "Game has finished!");
+                        } else {
+                            for (ParseObject player : game.getRelation("players").getQuery().find()) {
+                                ParseGeoPoint geo = (ParseGeoPoint) player.get("location");
+                                if (player.getBoolean("isPrey")) {
+                                    preyLoc.setLatitude(geo.getLatitude());
+                                    preyLoc.setLongitude(geo.getLongitude());
+                                }
+                                String playerName = player.get("name").toString();
+                                LatLng latLng = new LatLng(geo.getLatitude(), geo.getLongitude());
+                                MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(playerName).icon(BitmapDescriptorFactory.fromBitmap(makeMarkerIcon(player.get("playerColor").toString())));
+                                markers.put(playerName, markerOptions);
+                            }
+                            drawMarkers();
+                        }
+                    } catch (ParseException e1) {
+                        e1.printStackTrace();
+                        //TODO: Print query error
+                    }
+                } else {
+                    //TODO: Error msg...
+                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 }
