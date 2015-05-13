@@ -389,6 +389,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
 
     @Override
     public void onBackPressed() {
+        /* Disable for now
         update = false;
         gameDurationCDT.cancel();
         locationProvider.disconnect();
@@ -396,6 +397,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         mPlayer.release();
         super.onBackPressed();
         finish();
+        */
     }
 
     /*
