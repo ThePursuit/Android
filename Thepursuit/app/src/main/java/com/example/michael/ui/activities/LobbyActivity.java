@@ -52,6 +52,7 @@ public class LobbyActivity extends ActionBarActivity implements GameStateDialog.
     private String gameID;
     private int gameDuration;
     private int catchRadius;
+    private boolean noLobbyLeader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +75,7 @@ public class LobbyActivity extends ActionBarActivity implements GameStateDialog.
         /*
          * Thread that updates Player list in the Game session
          * and displays them in the lobby. Currently updating every
-         * 3 seconds (3000 ms). TODO: Cut down and separate code in the query, holy shit it's long
+         * 1 second (1000 ms). TODO: Cut down and separate code in the query, holy shit it's long
          * Stops thread when you press on "Play" button, since flag will be false.
          */
         handler.postDelayed(new Runnable() {
@@ -85,8 +86,12 @@ public class LobbyActivity extends ActionBarActivity implements GameStateDialog.
                 if (update) {
                     try {
                         int index = 0;
+                        noLobbyLeader = true;
                         for (ParseObject player : ParseQuery.getQuery("Game").whereEqualTo("gameID", gameID).getFirst().getRelation("players").getQuery().find()) {
                             players.add(player.get("name").toString());
+                            if(!isLobbyLeader && player.getBoolean("isCreator")){
+                                noLobbyLeader = false;
+                            }
                             if (player.getBoolean("isReady")) {
                                 indices.add(index);
                             }
@@ -97,6 +102,27 @@ public class LobbyActivity extends ActionBarActivity implements GameStateDialog.
                         playerList.setAdapter(adapter);
                         for (Integer n : indices) {
                             playerList.setItemChecked(n, true);
+                        }
+                        if(!isLobbyLeader && noLobbyLeader){
+                            update = false;
+                            abort = true;
+                            new AlertDialog.Builder(LobbyActivity.this)
+                                    .setTitle("Lobby leader has left the game")
+                                    .setMessage("Try to join or create a new game")
+                                    .setPositiveButton("Ok", new DialogInterface.OnClickListener(){
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            finish();
+                                            try {
+                                                ParseObject playerObj = ParseQuery.getQuery("Player").get(getIntent().getStringExtra("playerObjID"));
+                                                playerObj.delete();
+                                            } catch (ParseException e) {
+                                                e.printStackTrace();
+                                                //TODO: Internet connection error?
+                                            }
+                                        }
+                                    })
+                                    .show();
                         }
                     } catch (ParseException e) {
                         e.printStackTrace();
@@ -158,6 +184,13 @@ public class LobbyActivity extends ActionBarActivity implements GameStateDialog.
                         update = false;
                         abort = true;
                         finish();
+                        try {
+                            ParseObject playerObj = ParseQuery.getQuery("Player").get(getIntent().getStringExtra("playerObjID"));
+                            playerObj.delete();
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                            //TODO: Internet connection error?
+                        }
                     }
                 })
                 .setNegativeButton("No", null)
@@ -166,15 +199,16 @@ public class LobbyActivity extends ActionBarActivity implements GameStateDialog.
 
     public void playGame(View view) {
 
-        ParseObject playerObj = null;
-        try {
-            playerObj = ParseQuery.getQuery("Player").get(getIntent().getStringExtra("playerObjID"));
-        } catch (ParseException e) {
-            e.printStackTrace();
-            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-        }
-
         if (playBtn.getText().toString().equals("Ready")) {
+
+            ParseObject playerObj;
+            try {
+                playerObj = ParseQuery.getQuery("Player").get(getIntent().getStringExtra("playerObjID"));
+            } catch (ParseException e) {
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(), "Internet connection lost. Try again!", Toast.LENGTH_LONG).show();
+                return;
+            }
             abort = false;
             playBtn.setText("Waiting...");
             final Intent intent = new Intent(this, CountDownActivity.class);
@@ -231,10 +265,10 @@ public class LobbyActivity extends ActionBarActivity implements GameStateDialog.
                             try {
 
                                 ParseObject gameState = ParseQuery.getQuery("Game").whereEqualTo("gameID", gameID).getFirst().getRelation("state").getQuery().getFirst();
-                                if(!gameState.getBoolean("isPlaying")){
+                                if (!gameState.getBoolean("isPlaying")) {
                                     handler.postDelayed(this, 1000);
                                     //Toast.makeText(getApplicationContext(), gameState.getBoolean("isPlaying")+"", Toast.LENGTH_SHORT).show();
-                                } else{
+                                } else {
                                     //Toast.makeText(getApplicationContext(), gameState.getBoolean("isPlaying")+"", Toast.LENGTH_SHORT).show();
                                     ParseObject playerObj = ParseQuery.getQuery("Player").get(getIntent().getStringExtra("playerObjID"));
                                     intent.putExtra("isPrey", playerObj.getBoolean("isPrey"));
@@ -254,12 +288,15 @@ public class LobbyActivity extends ActionBarActivity implements GameStateDialog.
                 }
             }, 1000);
 
-        } else {
+        }
+        /*
+        else {
             playerObj.put("isReady", false);
             playerObj.saveInBackground();
             abort = true;
             playBtn.setText("Play");
         }
+        */
 
     }
 

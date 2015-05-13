@@ -17,6 +17,7 @@
         android:textColor="@color/White"/>
     />
 
+    <!--
     <Button
         android:id="@+id/skipButton"
         android:background="@drawable/rulesbutton"
@@ -27,5 +28,6 @@
         android:text="Skip"
         android:textAllCaps="false"
         android:onClick="skipBtn"/>
+        -->
 
 </RelativeLayout>
