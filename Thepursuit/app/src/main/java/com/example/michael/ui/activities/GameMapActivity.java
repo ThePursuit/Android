@@ -621,9 +621,9 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
                                 }
                             } else {
                                 if (isPrey) {
-                                    dialog.setStatusText("TIME OUT! They couldn't find you. You WIN! :)");
+                                    dialog.setStatusText("TIME OUT!" + "\n" +  "They couldn't find you." + "\n" + "You WIN! :)");
                                 } else {
-                                    dialog.setStatusText("TIME OUT! You guys suck at hunting. You LOSE! >:(");
+                                    dialog.setStatusText("TIME OUT!" + "\n" + "You guys suck at hunting." + "\n" + "You LOSE! >:(");
                                 }
                             }
                             dialog.show(fragmentManager, "Game has finished!");
