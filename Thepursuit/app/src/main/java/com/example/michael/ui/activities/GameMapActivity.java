@@ -583,63 +583,6 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
     public void handleNewLocation(final Location location) {
         Log.d(TAG, "Date: " + new Date().toString());
         loc = location;
-<<<<<<< HEAD
-
-        HashMap<String, Object> updateInfo = new HashMap<>();
-        updateInfo.put("gameID", gameID);
-        updateInfo.put("playerObjID", playerObjID);
-        updateInfo.put("latitude", loc.getLatitude());
-        updateInfo.put("longitude", loc.getLongitude());
-
-        ParseCloud.callFunctionInBackground("updateGame", updateInfo, new FunctionCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject game, ParseException e) {
-                if (e == null) {
-                    try {
-                        if (!game.getRelation("state").getQuery().getFirst().getBoolean("isPlaying")) {
-                            update = false;
-                            locationProvider.disconnect();
-                            if (game.getRelation("state").getQuery().getFirst().getBoolean("preyCaught")) {
-                                if (isPrey) {
-                                    dialog.setStatusText("You LOSE! You won't survive a zombie apocalypse :<");
-                                } else {
-                                    dialog.setStatusText("Someone has caught the prey, you WIN! :)");
-                                }
-                            } else {
-                                if (isPrey) {
-                                    dialog.setStatusText("TIME OUT!" + "\n" +  "They couldn't find you." + "\n" + "You WIN! :)");
-                                } else {
-                                    dialog.setStatusText("TIME OUT!" + "\n" + "You guys suck at hunting." + "\n" + "You LOSE! >:(");
-                                }
-                            }
-                            dialog.show(fragmentManager, "Game has finished!");
-                        } else {
-                            for (ParseObject player : game.getRelation("players").getQuery().find()) {
-                                ParseGeoPoint geo = (ParseGeoPoint) player.get("location");
-                                if (player.getBoolean("isPrey")) {
-                                    preyLoc.setLatitude(geo.getLatitude());
-                                    preyLoc.setLongitude(geo.getLongitude());
-                                } else {
-                                    String playerName = player.get("name").toString();
-                                    LatLng latLng = new LatLng(geo.getLatitude(), geo.getLongitude());
-                                    MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(playerName).icon(BitmapDescriptorFactory.fromBitmap(makeMarkerIcon(player.get("playerColor").toString())));
-                                    markers.put(playerName, markerOptions);
-                                }
-                            }
-                            drawMarkers();
-                        }
-                    } catch (ParseException e1) {
-                        e1.printStackTrace();
-                        //TODO: Print query error
-                    }
-                } else {
-                    //TODO: Error msg...
-                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-=======
->>>>>>> origin/master
     }
 
 }
