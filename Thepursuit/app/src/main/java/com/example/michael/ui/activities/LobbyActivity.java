@@ -103,10 +103,10 @@ public class LobbyActivity extends ActionBarActivity implements GameStateDialog.
                         //finish();
                         //TODO: Could use this to notify player that Game session has been DESTROYED SOMEHOW OO YEAH!!! :> (and maybe force them to change activity view back to previous)
                     }
-                    handler.postDelayed(this, 3000);
+                    handler.postDelayed(this, 1000);
                 }
             }
-        }, 3000);
+        }, 1000);
 
     }
 

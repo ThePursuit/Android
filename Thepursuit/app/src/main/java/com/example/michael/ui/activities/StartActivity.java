@@ -20,30 +20,12 @@ import com.parse.ParseObject;
 import java.util.HashMap;
 
 
-public class StartActivity extends ActionBarActivity implements GameStateDialog.Communicator {
-    private CountDownTimer cdt;
-    private final long startTime = 30000;
-    private final long interval = 100;
-    private ProgressBar pb;
+public class StartActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-        pb = (ProgressBar) findViewById(R.id.progressBar);
-        cdt = new CountDownTimer(startTime, interval) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                pb.setProgress(pb.getProgress()-1);
-            }
-
-            @Override
-            public void onFinish() {
-                pb.setProgress(0);
-                Toast.makeText(getApplicationContext(), "Kappa", Toast.LENGTH_LONG).show();
-            }
-        };
-        cdt.start();
     }
 
     @Override
@@ -75,7 +57,6 @@ public class StartActivity extends ActionBarActivity implements GameStateDialog.
     }
 
     public void createGame(View view) {
-        cdt.cancel();
         Intent intent = new Intent(this, CreateGameActivity.class);
         startActivity(intent);
     }
@@ -84,7 +65,6 @@ public class StartActivity extends ActionBarActivity implements GameStateDialog.
         ParseCloud.callFunctionInBackground("createPlayer", new HashMap<String, Object>(), new FunctionCallback<ParseObject>() {
             public void done(ParseObject player, ParseException e) {
                 if (e == null) {
-                    cdt.cancel();
                     Intent intent = new Intent(StartActivity.this, JoinGameActivity.class);
                     intent.putExtra("playerObjID", player.getObjectId());
                     startActivity(intent);
@@ -96,17 +76,9 @@ public class StartActivity extends ActionBarActivity implements GameStateDialog.
     }
 
     public void rulesBtn(View view) {
-        cdt.cancel();
         FragmentManager fm = getFragmentManager();
         GameStateDialog dialog = new GameStateDialog();
-        //dialog.setStatusText("Game rules: Catch the prey = win");
         dialog.show(fm, "Game rules");
-    }
-
-    @Override
-    public void onDialogMessage() {
-        //This is where you get after you've pressed Ok on the dialog and the dialog has been dismissed.
-        cdt.start();
     }
 
 }
