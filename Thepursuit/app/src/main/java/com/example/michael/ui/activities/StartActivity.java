@@ -8,6 +8,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.michael.ui.R;
@@ -23,11 +24,26 @@ public class StartActivity extends ActionBarActivity implements GameStateDialog.
     private CountDownTimer cdt;
     private final long startTime = 30000;
     private final long interval = 100;
+    private ProgressBar pb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
+        pb = (ProgressBar) findViewById(R.id.progressBar);
+        cdt = new CountDownTimer(startTime, interval) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                pb.setProgress(pb.getProgress()-1);
+            }
+
+            @Override
+            public void onFinish() {
+                pb.setProgress(0);
+                Toast.makeText(getApplicationContext(), "Kappa", Toast.LENGTH_LONG).show();
+            }
+        };
+        cdt.start();
     }
 
     @Override
