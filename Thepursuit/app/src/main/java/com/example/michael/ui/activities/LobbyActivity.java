@@ -1,6 +1,8 @@
 package com.example.michael.ui.activities;
 
+import android.app.AlertDialog;
 import android.app.FragmentManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -147,9 +149,19 @@ public class LobbyActivity extends ActionBarActivity implements GameStateDialog.
 
     @Override
     public void onBackPressed() {
-        update = false;
-        abort = true;
-        super.onBackPressed();
+        new AlertDialog.Builder(this)
+                .setTitle("Exit the Players Lobby")
+                .setMessage("Are you sure you want to exit the Game?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        update = false;
+                        abort = true;
+                        finish();
+                    }
+                })
+                .setNegativeButton("No", null)
+                .show();
     }
 
     public void playGame(View view) {
