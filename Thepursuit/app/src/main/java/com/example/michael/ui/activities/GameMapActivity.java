@@ -110,7 +110,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         catchRadius = getIntent().getIntExtra("catchRadius", 0);
         playerObjID = getIntent().getStringExtra("playerObjID");
         isPrey = getIntent().getBooleanExtra("isPrey", false);
-        gameDuration = 10;//In seconds
+        gameDuration = getIntent().getIntExtra("gameDuration", 0)*60;//In seconds
         gameDurationProgressValue = gameDuration * 10;
         pb = (ProgressBar) findViewById(R.id.timerProgress);
         talkBtn.setOnTouchListener(this);
@@ -186,31 +186,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         updateHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
-                mMap.clear();
-                for (MarkerOptions mo : markers.values()) {
-                    mMap.addMarker(mo);
-                }
-                if (isPrey) {
-                    distanceView.setText("You're the Prey, Hide!");//Create separate methods to call when you're prey and so on...
-                } else {
-                    distanceToPrey = Math.round(loc.distanceTo(preyLoc));
-                    if (distanceToPrey < 10) {
-                        distanceView.setText("You're very close!");
-                    } else {
-                        distanceView.setText("Prey: " + distanceToPrey + "m");
-                    }
-
-                    /*
-                    //Change update frequency
-                    if (distanceToPrey > 100) {
-                        updateLocationInterval = 2000;
-                    } else if (distanceToPrey > 20) {
-                        updateLocationInterval = 1000;
-                    } else {
-                        updateLocationInterval = 500;
-                    }
-                    */
-                }
+                drawMarkers();
             }
         };
 
@@ -220,9 +196,8 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
                 while (update) {
 
                     HashMap<String, Object> updateInfo = new HashMap<>();
-                    //Get my location method
                     updateInfo.put("gameID", gameID);
-                    updateInfo.put("playerObjID", getIntent().getStringExtra("playerObjID"));
+                    updateInfo.put("playerObjID", playerObjID);
                     updateInfo.put("latitude", loc.getLatitude());
                     updateInfo.put("longitude", loc.getLongitude());
 
@@ -231,12 +206,21 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
                         public void done(ParseObject game, ParseException e) {
                             if (e == null) {
                                 try {
-                                    if (game.getRelation("state").getQuery().getFirst().getBoolean("preyCaught")) {
+                                    if (!game.getRelation("state").getQuery().getFirst().getBoolean("isPlaying")) {
                                         update = false;
-                                        if (isPrey) {
-                                            dialog.setStatusText("You LOST! :<");
+                                        locationProvider.disconnect();
+                                        if (game.getRelation("state").getQuery().getFirst().getBoolean("preyCaught")) {
+                                            if (isPrey) {
+                                                dialog.setStatusText("You LOSE! You won't survive a zombie apocalypse :<");
+                                            } else {
+                                                dialog.setStatusText("Someone has caught the prey, you WIN! :)");
+                                            }
                                         } else {
-                                            dialog.setStatusText("Someone has caught the prey, your team WON! :) ");
+                                            if (isPrey) {
+                                                dialog.setStatusText("TIME OUT! They couldn't find you. You WIN! :)");
+                                            } else {
+                                                dialog.setStatusText("TIME OUT! You guys suck at hunting. You LOSE! >:(");
+                                            }
                                         }
                                         dialog.show(fragmentManager, "Game has finished!");
                                     } else {
@@ -245,7 +229,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
                                             if (player.getBoolean("isPrey")) {
                                                 preyLoc.setLatitude(geo.getLatitude());
                                                 preyLoc.setLongitude(geo.getLongitude());
-                                            } else if (!player.getObjectId().equals(getIntent().getStringExtra("playerObjID"))) {
+                                            } else {
                                                 String playerName = player.get("name").toString();
                                                 LatLng latLng = new LatLng(geo.getLatitude(), geo.getLongitude());
                                                 MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(playerName).icon(BitmapDescriptorFactory.fromBitmap(makeMarkerIcon(player.get("playerColor").toString())));
@@ -312,7 +296,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
 
         locationThread = new Thread(updateLocation);
         audioThread = new Thread(retrieveAudio);
-        //locationThread.start();
+        locationThread.start();
         audioThread.start();
         gameDurationCDT.start();
     }
@@ -598,6 +582,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
     public void handleNewLocation(final Location location) {
         Log.d(TAG, "Date: " + new Date().toString());
         loc = location;
+<<<<<<< HEAD
 
         HashMap<String, Object> updateInfo = new HashMap<>();
         updateInfo.put("gameID", gameID);
@@ -652,5 +637,8 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
                 }
             }
         });
+=======
+>>>>>>> b07ab6de28f8ad3b722ad83cfe2ba43e5c44dd14
     }
+
 }
