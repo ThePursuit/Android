@@ -17,7 +17,6 @@ import com.parse.ParseObject;
 
 import java.util.HashMap;
 
-
 public class StartActivity extends ActionBarActivity {
 
     @Override

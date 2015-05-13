@@ -164,7 +164,6 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
 
             }
         };
-        gameDurationCDT.start();
 
         update = true; //Make it true elsewhere...
         markerRadius = 25;
@@ -316,6 +315,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         audioThread = new Thread(retrieveAudio);
         //locationThread.start();
         audioThread.start();
+        gameDurationCDT.start();
     }
 
     public void getMyLocation() {
@@ -379,8 +379,10 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         //mMap.setMyLocationEnabled(true);
         //Disable scrolling
+        //mMap.getUiSettings().setAllGesturesEnabled(false);
         mMap.getUiSettings().setCompassEnabled(false);
         mMap.getUiSettings().setRotateGesturesEnabled(false);
+        mMap.getUiSettings().setScrollGesturesEnabled(false);
         mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
     }
 
@@ -417,6 +419,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
     @Override
     public void onBackPressed() {
         update = false;
+        gameDurationCDT.cancel();
         locationProvider.disconnect();
         mPlayer.stop();
         super.onBackPressed();
