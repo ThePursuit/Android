@@ -8,10 +8,14 @@
     <TextView
         android:id="@+id/distanceView"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="70dp"
+        android:layout_marginTop="-8dp"
+        android:layout_marginBottom="10dp"
         android:gravity="center"
-        android:text="Prey: 100m"
-        android:textSize="20sp"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/white"
+        android:textSize="25dp"
+        android:textAlignment="center"
         android:textStyle="bold" />
 
     <ProgressBar
@@ -20,6 +24,7 @@
         android:layout_height="25dp"
         android:id="@+id/timerProgress"
         android:max="30"
+        android:layout_marginTop="15dp"
         android:progress="30"
         android:progressDrawable="@drawable/progressbar"
         android:minHeight="5dp"

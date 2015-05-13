@@ -21,7 +21,7 @@ public class CountDownActivity extends ActionBarActivity {
 
     @InjectView(R.id.timerText) TextView timerText;
     private CountDownTimer cdt;
-    private final long startTime = 30000;
+    private final long startTime = 60000;
     private final long interval = 1000;
     private int gameDuration;
     private int catchRadius;
