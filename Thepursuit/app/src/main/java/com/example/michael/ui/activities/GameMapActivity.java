@@ -52,7 +52,7 @@ import java.util.Map;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class GameMapActivity extends FragmentActivity implements Button.OnTouchListener, MediaPlayer.OnCompletionListener, GameStateDialog.Communicator, LocationProvider.LocationCallback {
+public class GameMapActivity extends FragmentActivity implements Button.OnTouchListener, MediaPlayer.OnCompletionListener, EndGameDialog.Communicator, LocationProvider.LocationCallback {
 
     @InjectView(R.id.distanceView)
     TextView distanceView;
@@ -87,7 +87,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
     private final long interval = 1000;
     private String nickName;
     private FragmentManager fragmentManager;
-    private GameStateDialog dialog;
+    private EndGameDialog dialog;
     private boolean isLobbyLeader;
     private ProgressBar pb;
     private LocationProvider locationProvider;
@@ -113,7 +113,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         loc.setLatitude(0);
         loc.setLongitude(0);
         fragmentManager = getFragmentManager();
-        dialog = new GameStateDialog();
+        dialog = new EndGameDialog();
         mFileName = getFilesDir().getAbsolutePath();
         mFileName += "/AudioRecord_ThePursuit.3gp";
         gameID = getIntent().getStringExtra("gameID");
@@ -238,7 +238,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
                                         if (isPrey) {
                                             dialog.setStatusText("You LOST! :<");
                                         } else {
-                                            dialog.setStatusText("Someone has caught the prey, your team WON! :) yada yada");
+                                            dialog.setStatusText("Someone has caught the prey, your team WON! :) ");
                                         }
                                         dialog.show(fragmentManager, "Game has finished!");
                                     } else {
