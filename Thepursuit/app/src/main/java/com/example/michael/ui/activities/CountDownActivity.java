@@ -1,5 +1,7 @@
 package com.example.michael.ui.activities;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.CountDownTimer;
@@ -8,11 +10,12 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.michael.ui.R;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -26,7 +29,6 @@ public class CountDownActivity extends ActionBarActivity {
     private int gameDuration;
     private int catchRadius;
     AnimationDrawable drawable;
-    private ProgressBar progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,8 +98,25 @@ public class CountDownActivity extends ActionBarActivity {
 
     @Override
     public void onBackPressed(){
-        cdt.cancel();
-        super.onBackPressed();
+        new AlertDialog.Builder(this)
+                .setTitle("Exit the CountDown will quit the game")
+                .setMessage("Are you sure you want to quit the Game?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        cdt.cancel();
+                        finish();
+                        try {
+                            ParseObject playerObj = ParseQuery.getQuery("Player").get(getIntent().getStringExtra("playerObjID"));
+                            playerObj.delete();
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                            //TODO: Internet connection error?
+                        }
+                    }
+                })
+                .setNegativeButton("No", null)
+                .show();
     }
 
     public void skipBtn(View view){

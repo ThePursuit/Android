@@ -63,6 +63,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
     Button talkBtn;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private Handler updateHandler;
+    private Handler finishHandler;
     private Location preyLoc;
     private String playerObjID;
     private Location loc;
@@ -101,7 +102,6 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_map);
-        dialog.setCancelable(false);
         ButterKnife.inject(this);
         setUpMapIfNeeded();
         locationProvider = new LocationProvider(this, this);
@@ -112,8 +112,8 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         catchRadius = getIntent().getIntExtra("catchRadius", 0);
         playerObjID = getIntent().getStringExtra("playerObjID");
         isPrey = getIntent().getBooleanExtra("isPrey", false);
-        gameDuration = getIntent().getIntExtra("gameDuration", 0)*60;//In seconds
-        gameDurationProgressValue = gameDuration * 10;
+        gameDuration = getIntent().getIntExtra("gameDuration", 0);//In seconds
+        gameDurationProgressValue = gameDuration * 10 * 60;
         pb = (ProgressBar) findViewById(R.id.timerProgress);
         talkBtn.setOnTouchListener(this);
         mPlayer = new MediaPlayer();
@@ -126,6 +126,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         loc.setLongitude(0);
         fragmentManager = getFragmentManager();
         dialog = new EndGameDialog();
+        dialog.setCancelable(false);
         mFileName = getFilesDir().getAbsolutePath();
         mFileName += "/AudioRecord_ThePursuit.3gp";
         update = true;
@@ -142,10 +143,10 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         pb.setMax(gameDurationProgressValue);
         pb.setProgress(gameDurationProgressValue);
 
-        gameDurationCDT = new CountDownTimer(gameDuration * 1000, 100) {
+        gameDurationCDT = new CountDownTimer(gameDuration * 60 * 1000, 100) {
             @Override
             public void onTick(long millisUntilFinished) {
-                pb.setProgress((gameDurationProgressValue) - ((int) millisUntilFinished/100));
+                pb.setProgress((gameDurationProgressValue) - ((int) millisUntilFinished / 100));
             }
 
             @Override
@@ -189,6 +190,14 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
             }
         };
 
+        finishHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                gameDurationCDT.cancel();
+                pb.setProgress(gameDurationProgressValue);
+            }
+        };
+
         updateLocation = new Runnable() {
             @Override
             public void run() {
@@ -208,6 +217,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
                                     if (!game.getRelation("state").getQuery().getFirst().getBoolean("isPlaying")) {
                                         update = false;
                                         locationProvider.disconnect();
+                                        finishHandler.sendEmptyMessage(0);
                                         if (game.getRelation("state").getQuery().getFirst().getBoolean("preyCaught")) {
                                             if (isPrey) {
                                                 dialog.setStatusText("You LOSE! You won't survive a zombie apocalypse :<");
@@ -297,7 +307,9 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         locationThread = new Thread(updateLocation);
         audioThread = new Thread(retrieveAudio);
         locationThread.start();
-        audioThread.start();
+        if(!isPrey){
+            audioThread.start();
+        }
         gameDurationCDT.start();
     }
 
@@ -352,6 +364,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         //mMap.setMyLocationEnabled(true);
         //Disable scrolling
+        mMap.getUiSettings().setMapToolbarEnabled(false);
         mMap.getUiSettings().setRotateGesturesEnabled(false);
         mMap.getUiSettings().setScrollGesturesEnabled(false);
         mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
@@ -440,12 +453,12 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
             @Override
             public void done(ParseObject game, ParseException e) {
                 if (e == null) {
-                    update = false;
-                    locationProvider.disconnect();
+                    //update = false;
+                    //locationProvider.disconnect();
                     //dialog.setStatusText("Congratulations, you caught the prey! :D");
                     //dialog.show(fragmentManager, "Game has finished!");
                     //Toast.makeText(getApplicationContext(), "CAUGHT!", Toast.LENGTH_LONG).show();
-                    gameDurationCDT.cancel();
+                    //gameDurationCDT.cancel();
                 } else {
                     Toast.makeText(getApplicationContext(), "You're not close enough!", Toast.LENGTH_LONG).show();
                     catchBtn.setEnabled(false);
@@ -540,12 +553,12 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
             intent.putExtra("isLobbyLeader", isLobbyLeader);
             intent.putExtra("gameDuration", gameDuration);
             intent.putExtra("catchRadius", catchRadius);
-            startActivity(intent);
             finish();
+            startActivity(intent);
         } catch (ParseException e1) {
             e1.printStackTrace();
-            super.onBackPressed();
             finish();
+            //super.onBackPressed();
             //TODO: No internet connection or game leader left which causes game object to destroy?
         }
     }
