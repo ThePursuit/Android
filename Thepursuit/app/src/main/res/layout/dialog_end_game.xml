@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:scrollbarThumbVertical="@color/white"
     android:background="@drawable/gradient">
 
@@ -10,8 +10,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/textView"
         android:textSize="28dp"
-        android:layout_alignParentTop="true"
         android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:gravity="center"
         android:textStyle="bold"
         android:textColor="@color/white"/>

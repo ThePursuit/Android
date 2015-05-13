@@ -122,8 +122,8 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         gameDuration = 30;//In seconds
         catchRadius = getIntent().getIntExtra("catchRadius", 0);
 
-        pb.setMax(gameDuration*10);
-        pb.setProgress(gameDuration*10);
+        pb.setMax(gameDuration * 10);
+        pb.setProgress(gameDuration * 10);
 
         catchBtnBlockCDT = new CountDownTimer(startTime, interval) {
             @Override
@@ -138,10 +138,10 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
             }
         };
 
-        gameDurationCDT = new CountDownTimer(gameDuration*1000, 100) {
+        gameDurationCDT = new CountDownTimer(gameDuration * 1000, 100) {
             @Override
             public void onTick(long millisUntilFinished) {
-                pb.setProgress(pb.getProgress()-1);
+                pb.setProgress(pb.getProgress() - 1);
             }
 
             @Override
@@ -377,9 +377,10 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
     private void setUpMap() {
         // Set map type
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-        mMap.setMyLocationEnabled(true);
+        //mMap.setMyLocationEnabled(true);
         //Disable scrolling
-        //mMap.getUiSettings().setScrollGesturesEnabled(false);
+        mMap.getUiSettings().setCompassEnabled(false);
+        mMap.getUiSettings().setRotateGesturesEnabled(false);
         mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
     }
 
@@ -572,6 +573,8 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
 
     public void drawMarkers() {
         mMap.clear();
+        LatLng latLng = new LatLng(loc.getLatitude(), loc.getLongitude());
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         for (MarkerOptions mo : markers.values()) {
             mMap.addMarker(mo);
         }
@@ -617,13 +620,13 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
                         if (!game.getRelation("state").getQuery().getFirst().getBoolean("isPlaying")) {
                             update = false;
                             locationProvider.disconnect();
-                            if(game.getRelation("state").getQuery().getFirst().getBoolean("preyCaught")){
+                            if (game.getRelation("state").getQuery().getFirst().getBoolean("preyCaught")) {
                                 if (isPrey) {
                                     dialog.setStatusText("You LOSE! You won't survive a zombie apocalypse :<");
                                 } else {
                                     dialog.setStatusText("Someone has caught the prey, you WIN! :)");
                                 }
-                            } else{
+                            } else {
                                 if (isPrey) {
                                     dialog.setStatusText("TIME OUT! They couldn't find you. You WIN! :)");
                                 } else {
@@ -637,11 +640,12 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
                                 if (player.getBoolean("isPrey")) {
                                     preyLoc.setLatitude(geo.getLatitude());
                                     preyLoc.setLongitude(geo.getLongitude());
+                                } else {
+                                    String playerName = player.get("name").toString();
+                                    LatLng latLng = new LatLng(geo.getLatitude(), geo.getLongitude());
+                                    MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(playerName).icon(BitmapDescriptorFactory.fromBitmap(makeMarkerIcon(player.get("playerColor").toString())));
+                                    markers.put(playerName, markerOptions);
                                 }
-                                String playerName = player.get("name").toString();
-                                LatLng latLng = new LatLng(geo.getLatitude(), geo.getLongitude());
-                                MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(playerName).icon(BitmapDescriptorFactory.fromBitmap(makeMarkerIcon(player.get("playerColor").toString())));
-                                markers.put(playerName, markerOptions);
                             }
                             drawMarkers();
                         }

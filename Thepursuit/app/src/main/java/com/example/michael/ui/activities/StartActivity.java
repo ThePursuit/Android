@@ -3,7 +3,6 @@ package com.example.michael.ui.activities;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,11 +19,15 @@ import com.parse.ParseObject;
 import java.util.HashMap;
 
 
+<<<<<<< HEAD
 public class StartActivity extends ActionBarActivity implements GameStateDialog.Communicator {
     private CountDownTimer cdt;
     private final long startTime = 30000;
     private final long interval = 100;
     private ProgressBar pb;
+=======
+public class StartActivity extends ActionBarActivity {
+>>>>>>> 6af1830ce09c4e4101f0853412f0389e28a5af6d
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +78,6 @@ public class StartActivity extends ActionBarActivity implements GameStateDialog.
     }
 
     public void createGame(View view) {
-        cdt.cancel();
         Intent intent = new Intent(this, CreateGameActivity.class);
         startActivity(intent);
     }
@@ -84,7 +86,6 @@ public class StartActivity extends ActionBarActivity implements GameStateDialog.
         ParseCloud.callFunctionInBackground("createPlayer", new HashMap<String, Object>(), new FunctionCallback<ParseObject>() {
             public void done(ParseObject player, ParseException e) {
                 if (e == null) {
-                    cdt.cancel();
                     Intent intent = new Intent(StartActivity.this, JoinGameActivity.class);
                     intent.putExtra("playerObjID", player.getObjectId());
                     startActivity(intent);
@@ -96,17 +97,13 @@ public class StartActivity extends ActionBarActivity implements GameStateDialog.
     }
 
     public void rulesBtn(View view) {
-        cdt.cancel();
         FragmentManager fm = getFragmentManager();
         GameStateDialog dialog = new GameStateDialog();
+<<<<<<< HEAD
         dialog.setStatusText("Game rules: Catch the prey = win");
+=======
+>>>>>>> 6af1830ce09c4e4101f0853412f0389e28a5af6d
         dialog.show(fm, "Game rules");
-    }
-
-    @Override
-    public void onDialogMessage() {
-        //This is where you get after you've pressed Ok on the dialog and the dialog has been dismissed.
-        cdt.start();
     }
 
 }
