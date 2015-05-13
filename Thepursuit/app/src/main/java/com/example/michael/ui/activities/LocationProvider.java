@@ -34,6 +34,10 @@ public class LocationProvider implements
     private Context mContext;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
+    private Runnable updateLocation;
+    private Thread locationThread;
+    private boolean update;
+    private Location latestLocation;
 
     public LocationProvider(Context context, LocationCallback callback) {
         mGoogleApiClient = new GoogleApiClient.Builder(context)
@@ -47,10 +51,30 @@ public class LocationProvider implements
         // Create the LocationRequest object
         mLocationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setInterval(1 * 1000)        // 10 seconds, in milliseconds
-                .setFastestInterval(1 * 1000); // 1 second, in milliseconds
+                .setInterval(1 * 1000); // 1 second, in milliseconds
 
         mContext = context;
+
+        update = true;
+        updateLocation = new Runnable() {
+            @Override
+            public void run() {
+                while(update){
+                    latestLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+                    if (latestLocation != null) {
+                        mLocationCallback.handleNewLocation(latestLocation);
+                    }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+
+        locationThread = new Thread(updateLocation);
+
     }
 
     public void connect() {
@@ -61,20 +85,30 @@ public class LocationProvider implements
         if (mGoogleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
+            cancelUpdateThread();
+        }
+    }
+
+    public void cancelUpdateThread(){
+        update = false;
+        try {
+            locationThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
     @Override
     public void onConnected(Bundle bundle) {
         Log.i(TAG, "Location services connected.");
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        update = true;
+        locationThread.start();
         /*
         Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (location == null) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-        } else {
+        if (location != null) {
             mLocationCallback.handleNewLocation(location);
         }
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         */
     }
 
