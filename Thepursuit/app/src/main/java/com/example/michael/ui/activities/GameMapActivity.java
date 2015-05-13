@@ -95,6 +95,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
     private int gameDuration;
     private int catchRadius;
     private int gameDurationProgressValue;
+    private MarkerOptions preyMarker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,7 +127,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         dialog = new EndGameDialog();
         mFileName = getFilesDir().getAbsolutePath();
         mFileName += "/AudioRecord_ThePursuit.3gp";
-        update = true; //Make it true elsewhere...
+        update = true;
         markerRadius = 25;
         markers = new HashMap<>();
         playedAudioFiles = new ArrayList<>();
@@ -136,9 +137,6 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
             catchBtn.setVisibility(View.GONE);
             talkBtn.setVisibility(View.GONE);
         }
-
-
-        talkBtn.setVisibility(View.GONE);
 
         pb.setMax(gameDurationProgressValue);
         pb.setProgress(gameDurationProgressValue);
@@ -226,13 +224,14 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
                                     } else {
                                         for (ParseObject player : game.getRelation("players").getQuery().find()) {
                                             ParseGeoPoint geo = (ParseGeoPoint) player.get("location");
+                                            String playerName = player.get("name").toString();
+                                            LatLng latLng = new LatLng(geo.getLatitude(), geo.getLongitude());
+                                            MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(playerName).icon(BitmapDescriptorFactory.fromBitmap(makeMarkerIcon(player.get("playerColor").toString())));
                                             if (player.getBoolean("isPrey")) {
                                                 preyLoc.setLatitude(geo.getLatitude());
                                                 preyLoc.setLongitude(geo.getLongitude());
+                                                preyMarker = markerOptions;
                                             } else {
-                                                String playerName = player.get("name").toString();
-                                                LatLng latLng = new LatLng(geo.getLatitude(), geo.getLongitude());
-                                                MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(playerName).icon(BitmapDescriptorFactory.fromBitmap(makeMarkerIcon(player.get("playerColor").toString())));
                                                 markers.put(playerName, markerOptions);
                                             }
                                         }
@@ -556,6 +555,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
             mMap.addMarker(mo);
         }
         if (isPrey) {
+            mMap.addMarker(preyMarker);
             distanceView.setText("You're the Prey, Hide!");//Create separate methods to call when you're prey and so on...
         } else {
             distanceToPrey = Math.round(loc.distanceTo(preyLoc));
