@@ -45,6 +45,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +62,6 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
     @InjectView(R.id.talkButton)
     Button talkBtn;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-    private Handler locHandler;
     private Handler updateHandler;
     private Location preyLoc;
     private String playerObjID;
@@ -94,6 +94,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
     public static final String TAG = GameMapActivity.class.getSimpleName();
     private int gameDuration;
     private int catchRadius;
+    private int gameDurationProgressValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +103,15 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         ButterKnife.inject(this);
         setUpMapIfNeeded();
         locationProvider = new LocationProvider(this, this);
+        locationProvider.connect();
+        gameID = getIntent().getStringExtra("gameID");
+        nickName = getIntent().getStringExtra("nickName");
+        isLobbyLeader = getIntent().getBooleanExtra("isLobbyLeader", false);
+        catchRadius = getIntent().getIntExtra("catchRadius", 0);
+        playerObjID = getIntent().getStringExtra("playerObjID");
+        isPrey = getIntent().getBooleanExtra("isPrey", false);
+        gameDuration = 10;//In seconds
+        gameDurationProgressValue = gameDuration * 10;
         pb = (ProgressBar) findViewById(R.id.timerProgress);
         talkBtn.setOnTouchListener(this);
         mPlayer = new MediaPlayer();
@@ -116,37 +126,32 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         dialog = new EndGameDialog();
         mFileName = getFilesDir().getAbsolutePath();
         mFileName += "/AudioRecord_ThePursuit.3gp";
-        gameID = getIntent().getStringExtra("gameID");
-        nickName = getIntent().getStringExtra("nickName");
-        isLobbyLeader = getIntent().getBooleanExtra("isLobbyLeader", false);
-        gameDuration = 30;//In seconds
-        catchRadius = getIntent().getIntExtra("catchRadius", 0);
+        update = true; //Make it true elsewhere...
+        markerRadius = 25;
+        markers = new HashMap<>();
+        playedAudioFiles = new ArrayList<>();
 
-        pb.setMax(gameDuration * 10);
-        pb.setProgress(gameDuration * 10);
+        updateLocationInterval = 1000;
+        if (isPrey) {
+            catchBtn.setVisibility(View.GONE);
+            talkBtn.setVisibility(View.GONE);
+        }
 
-        catchBtnBlockCDT = new CountDownTimer(startTime, interval) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                catchBtn.setText(String.valueOf(millisUntilFinished / 1000));
-            }
 
-            @Override
-            public void onFinish() {
-                catchBtn.setText("Catch");
-                catchBtn.setEnabled(true);
-            }
-        };
+        talkBtn.setVisibility(View.GONE);
+
+        pb.setMax(gameDurationProgressValue);
+        pb.setProgress(gameDurationProgressValue);
 
         gameDurationCDT = new CountDownTimer(gameDuration * 1000, 100) {
             @Override
             public void onTick(long millisUntilFinished) {
-                pb.setProgress(pb.getProgress() - 1);
+                pb.setProgress((gameDurationProgressValue) - ((int) millisUntilFinished/100));
             }
 
             @Override
             public void onFinish() {
-                pb.setProgress(0);
+                pb.setProgress(gameDurationProgressValue);
                 HashMap<String, Object> endGameInfo = new HashMap<>();
                 endGameInfo.put("gameID", gameID);
 
@@ -165,22 +170,16 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
             }
         };
 
-        update = true; //Make it true elsewhere...
-        markerRadius = 25;
-        markers = new HashMap<>();
-        playedAudioFiles = new ArrayList<>();
-        playerObjID = getIntent().getStringExtra("playerObjID");
-        isPrey = getIntent().getBooleanExtra("isPrey", false);
-        updateLocationInterval = 1000;
-        if (isPrey) {
-            catchBtn.setEnabled(false);
-        }
-
-        locHandler = new Handler() {
+        catchBtnBlockCDT = new CountDownTimer(startTime, interval) {
             @Override
-            public void handleMessage(Message msg) {
-                //TODO: Change this approach, too laggy...
-                getMyLocation();
+            public void onTick(long millisUntilFinished) {
+                catchBtn.setText(String.valueOf(millisUntilFinished / 1000));
+            }
+
+            @Override
+            public void onFinish() {
+                catchBtn.setText("Catch");
+                catchBtn.setEnabled(true);
             }
         };
 
@@ -221,7 +220,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
                 while (update) {
 
                     HashMap<String, Object> updateInfo = new HashMap<>();
-                    locHandler.sendEmptyMessage(0);
+                    //Get my location method
                     updateInfo.put("gameID", gameID);
                     updateInfo.put("playerObjID", getIntent().getStringExtra("playerObjID"));
                     updateInfo.put("latitude", loc.getLatitude());
@@ -318,16 +317,6 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         gameDurationCDT.start();
     }
 
-    public void getMyLocation() {
-        if (mMap.getMyLocation() == null) { // TODO: Better fix, doesn't need to make this check. Make sure it's never null before this method
-            //Toast.makeText(getApplicationContext(), "Getting current location data...", Toast.LENGTH_LONG).show();
-        } else {
-            loc = mMap.getMyLocation();
-            //LatLng myLatLng = new LatLng(loc.getLatitude(), loc.getLongitude());
-            //mMap.moveCamera(CameraUpdateFactory.newLatLng(myLatLng));
-        }
-    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -338,7 +327,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
     @Override
     protected void onPause() {
         super.onPause();
-        locationProvider.disconnect();
+        //locationProvider.disconnect();
     }
 
     /**
@@ -379,8 +368,6 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         //mMap.setMyLocationEnabled(true);
         //Disable scrolling
-        //mMap.getUiSettings().setAllGesturesEnabled(false);
-        mMap.getUiSettings().setCompassEnabled(false);
         mMap.getUiSettings().setRotateGesturesEnabled(false);
         mMap.getUiSettings().setScrollGesturesEnabled(false);
         mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
@@ -422,6 +409,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         gameDurationCDT.cancel();
         locationProvider.disconnect();
         mPlayer.stop();
+        mPlayer.release();
         super.onBackPressed();
         finish();
     }
@@ -551,6 +539,8 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
 
     @Override
     public void onDialogMessage() {
+        mPlayer.stop();
+        mPlayer.release();
         ArrayList<String> players = new ArrayList<>();
         try {
             for (ParseObject player : ParseQuery.getQuery("Game").whereEqualTo("gameID", gameID).getFirst().getRelation("players").getQuery().find()) {
@@ -568,8 +558,8 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
             finish();
         } catch (ParseException e1) {
             e1.printStackTrace();
-            //super.onBackPressed();
-            //finish();
+            super.onBackPressed();
+            finish();
             //TODO: No internet connection or game leader left which causes game object to destroy?
         }
     }
@@ -606,12 +596,12 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
 
     @Override
     public void handleNewLocation(final Location location) {
-        Log.d(TAG, location.toString());
+        Log.d(TAG, "Date: " + new Date().toString());
         loc = location;
 
         HashMap<String, Object> updateInfo = new HashMap<>();
         updateInfo.put("gameID", gameID);
-        updateInfo.put("playerObjID", getIntent().getStringExtra("playerObjID"));
+        updateInfo.put("playerObjID", playerObjID);
         updateInfo.put("latitude", loc.getLatitude());
         updateInfo.put("longitude", loc.getLongitude());
 

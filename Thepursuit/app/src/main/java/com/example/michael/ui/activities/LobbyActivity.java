@@ -62,7 +62,7 @@ public class LobbyActivity extends ActionBarActivity implements GameStateDialog.
         gameDuration = getIntent().getIntExtra("gameDuration", 0);
         catchRadius = getIntent().getIntExtra("catchRadius", 0);
         lobbyGameCodeView.setText("Game code: " + gameID + "\n"
-                                     + "The duration of the game is: " + gameDuration + "m\n" + "The catch radius of the game is: " + catchRadius + "m");;
+                                     + "The duration of the game is: " + gameDuration + "min\n" + "The catch radius of the game is: " + catchRadius + "m");;
         adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_checked, getIntent().getStringArrayListExtra("players")); // Ugly for now, doesn't show connected players at FIRST!
         playerList.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);

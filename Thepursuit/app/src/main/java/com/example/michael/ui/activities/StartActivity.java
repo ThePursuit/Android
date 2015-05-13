@@ -17,7 +17,7 @@ import com.parse.ParseObject;
 
 import java.util.HashMap;
 
-public class StartActivity extends ActionBarActivity {
+public class StartActivity extends ActionBarActivity implements GameStateDialog.Communicator {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +76,11 @@ public class StartActivity extends ActionBarActivity {
         FragmentManager fm = getFragmentManager();
         GameStateDialog dialog = new GameStateDialog();
         dialog.show(fm, "Game rules");
+    }
+
+    @Override
+    public void onDialogMessage() {
+        //Called when the you click Ok on the Dialog
     }
 
 }
