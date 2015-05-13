@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:id="@+id/firstInfo"
-        android:textSize="16dp"
+        android:textSize="15dp"
         android:layout_below="@id/heading"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
@@ -36,7 +36,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textSize="18dp"
+        android:textSize="17dp"
         android:textStyle="bold"
         android:text="As the prey:"
         android:id="@+id/asPrey"
@@ -55,7 +55,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="To win the game your job is not to be caught. The other players can see and hear each other, but they only know their distance to you. This means you have an advantage with seeing all of them on the map. You lose when a hunter presses the catch-button at a close enough proximity to you. When the time has lapsed and you’re not caught, you win!"
         android:id="@+id/preyRules"
-        android:textSize="16dp"
+        android:textSize="15dp"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
         android:paddingTop="2dp"
@@ -71,7 +71,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="As the hunters:"
         android:id="@+id/asHunters"
-        android:textSize="18dp"
+        android:textSize="17dp"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
         android:textStyle="bold"
@@ -88,7 +88,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="To win the game your job is to work as a team to catch the prey. You do this by pressing the catch-button at a close enough proximity to the prey. You can communicate with all other players and see them on the map, except for the prey. The prey can however see all of you. You have the duration of the game to find the prey, otherwise the prey wins!"
         android:id="@+id/hunterRules"
-        android:textSize="16dp"
+        android:textSize="15dp"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
         android:paddingTop="2dp"
@@ -97,7 +97,6 @@
         android:gravity="center"
         android:textColor="@color/white"
         />
-
 
     <Button
         android:layout_width="wrap_content"
