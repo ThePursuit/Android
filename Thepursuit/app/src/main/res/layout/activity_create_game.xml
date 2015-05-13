@@ -75,8 +75,8 @@
             android:layout_marginTop="10dp"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:progress="4"
-            android:max="9"
+            android:progress="0"
+            android:max="10"
             android:layout_alignLeft="@+id/areaRadiusSeekBar"
             android:layout_alignStart="@+id/areaRadiusSeekBar" />
 
