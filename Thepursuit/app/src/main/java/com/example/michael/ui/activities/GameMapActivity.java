@@ -579,7 +579,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
             distanceView.setText("You're the Prey, Hide!");//Create separate methods to call when you're prey and so on...
         } else {
             distanceToPrey = Math.round(loc.distanceTo(preyLoc));
-            if (distanceToPrey < 10) {
+            if (distanceToPrey < 20) {
                 distanceView.setText("You're very close!");
             } else {
                 distanceView.setText("Prey: " + distanceToPrey + "m");
