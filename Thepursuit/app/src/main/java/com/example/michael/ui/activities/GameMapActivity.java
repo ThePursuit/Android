@@ -100,6 +100,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_map);
+        dialog.setCancelable(false);
         ButterKnife.inject(this);
         setUpMapIfNeeded();
         locationProvider = new LocationProvider(this, this);
@@ -582,7 +583,6 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
     public void handleNewLocation(final Location location) {
         Log.d(TAG, "Date: " + new Date().toString());
         loc = location;
-<<<<<<< HEAD
 
         HashMap<String, Object> updateInfo = new HashMap<>();
         updateInfo.put("gameID", gameID);
@@ -637,8 +637,6 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
                 }
             }
         });
-=======
->>>>>>> b07ab6de28f8ad3b722ad83cfe2ba43e5c44dd14
     }
 
 }

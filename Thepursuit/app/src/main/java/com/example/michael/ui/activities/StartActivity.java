@@ -22,6 +22,7 @@ public class StartActivity extends ActionBarActivity implements GameStateDialog.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_start);
     }
 
@@ -75,6 +76,7 @@ public class StartActivity extends ActionBarActivity implements GameStateDialog.
     public void rulesBtn(View view) {
         FragmentManager fm = getFragmentManager();
         GameStateDialog dialog = new GameStateDialog();
+        dialog.setCancelable(false);
         dialog.show(fm, "Game rules");
     }
 
