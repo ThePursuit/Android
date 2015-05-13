@@ -99,7 +99,7 @@ public class StartActivity extends ActionBarActivity implements GameStateDialog.
         cdt.cancel();
         FragmentManager fm = getFragmentManager();
         GameStateDialog dialog = new GameStateDialog();
-        //dialog.setStatusText("Game rules: Catch the prey = win");
+        dialog.setStatusText("Game rules: Catch the prey = win");
         dialog.show(fm, "Game rules");
     }
 
