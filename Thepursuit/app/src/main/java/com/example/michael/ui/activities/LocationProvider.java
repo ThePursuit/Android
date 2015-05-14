@@ -91,18 +91,22 @@ public class LocationProvider implements
 
     public void cancelUpdateThread(){
         update = false;
+        /*
         try {
             locationThread.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        */
     }
 
     @Override
     public void onConnected(Bundle bundle) {
         Log.i(TAG, "Location services connected.");
+        /*
         update = true;
         locationThread.start();
+        */
         /*
         Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (location != null) {

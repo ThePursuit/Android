@@ -64,6 +64,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private Handler updateHandler;
     private Handler finishHandler;
+    private Handler locationHandler;
     private Location preyLoc;
     private String playerObjID;
     private Location loc;
@@ -104,8 +105,8 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         setContentView(R.layout.activity_game_map);
         ButterKnife.inject(this);
         setUpMapIfNeeded();
-        locationProvider = new LocationProvider(this, this);
-        locationProvider.connect();
+        //locationProvider = new LocationProvider(this, this);
+        //locationProvider.connect();
         gameID = getIntent().getStringExtra("gameID");
         nickName = getIntent().getStringExtra("nickName");
         isLobbyLeader = getIntent().getBooleanExtra("isLobbyLeader", false);
@@ -190,6 +191,16 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
             }
         };
 
+        locationHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                Location tempLoc = mMap.getMyLocation();
+                if (tempLoc != null) {
+                    loc = tempLoc;
+                }
+            }
+        };
+
         finishHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -204,6 +215,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
                 while (update) {
 
                     HashMap<String, Object> updateInfo = new HashMap<>();
+                    locationHandler.sendEmptyMessage(0);
                     updateInfo.put("gameID", gameID);
                     updateInfo.put("playerObjID", playerObjID);
                     updateInfo.put("latitude", loc.getLatitude());
@@ -216,7 +228,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
                                 try {
                                     if (!game.getRelation("state").getQuery().getFirst().getBoolean("isPlaying")) {
                                         update = false;
-                                        locationProvider.disconnect();
+                                        //locationProvider.disconnect();
                                         finishHandler.sendEmptyMessage(0);
                                         if (game.getRelation("state").getQuery().getFirst().getBoolean("preyCaught")) {
                                             if (isPrey) {
@@ -236,14 +248,16 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
                                         for (ParseObject player : game.getRelation("players").getQuery().find()) {
                                             ParseGeoPoint geo = (ParseGeoPoint) player.get("location");
                                             String playerName = player.get("name").toString();
-                                            LatLng latLng = new LatLng(geo.getLatitude(), geo.getLongitude());
-                                            MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(playerName).icon(BitmapDescriptorFactory.fromBitmap(makeMarkerIcon(player.get("playerColor").toString())));
                                             if (player.getBoolean("isPrey")) {
                                                 preyLoc.setLatitude(geo.getLatitude());
                                                 preyLoc.setLongitude(geo.getLongitude());
-                                                preyMarker = markerOptions;
+                                                //preyMarker = markerOptions;
                                             } else {
-                                                markers.put(playerName, markerOptions);
+                                                if (!player.getObjectId().equals(playerObjID)) {
+                                                    LatLng latLng = new LatLng(geo.getLatitude(), geo.getLongitude());
+                                                    MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(playerName).icon(BitmapDescriptorFactory.fromBitmap(makeMarkerIcon(player.get("playerColor").toString())));
+                                                    markers.put(playerName, markerOptions);
+                                                }
                                             }
                                         }
                                         updateHandler.sendEmptyMessage(0);
@@ -307,7 +321,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
         locationThread = new Thread(updateLocation);
         audioThread = new Thread(retrieveAudio);
         locationThread.start();
-        if(!isPrey){
+        if (!isPrey) {
             audioThread.start();
         }
         gameDurationCDT.start();
@@ -317,7 +331,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
     public void onResume() {
         super.onResume();
         setUpMapIfNeeded();
-        locationProvider.connect();
+        //locationProvider.connect();
     }
 
     @Override
@@ -362,7 +376,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
     private void setUpMap() {
         // Set map type
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-        //mMap.setMyLocationEnabled(true);
+        mMap.setMyLocationEnabled(true);
         //Disable scrolling
         mMap.getUiSettings().setMapToolbarEnabled(false);
         mMap.getUiSettings().setRotateGesturesEnabled(false);
@@ -571,7 +585,7 @@ public class GameMapActivity extends FragmentActivity implements Button.OnTouchL
             mMap.addMarker(mo);
         }
         if (isPrey) {
-            mMap.addMarker(preyMarker);
+            //mMap.addMarker(preyMarker);
             distanceView.setText("You're the Prey, Hide!");//Create separate methods to call when you're prey and so on...
         } else {
             distanceToPrey = Math.round(loc.distanceTo(preyLoc));
