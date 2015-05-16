@@ -45,7 +45,7 @@
             android:scrollbarThumbVertical="@color/white"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:background="@color/LightSeaGreen"
             android:id="@+id/listView"
             android:layout_marginBottom="10dp"
