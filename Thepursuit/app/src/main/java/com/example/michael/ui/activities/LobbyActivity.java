@@ -4,12 +4,14 @@ import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -66,12 +68,24 @@ public class LobbyActivity extends ActionBarActivity implements GameStateDialog.
         catchRadius = getIntent().getIntExtra("catchRadius", 0);
         lobbyGameCodeView.setText("Game code: " + gameID + "\n"
                                      + "The duration of the game is: " + gameDuration + "min\n" + "The catch radius of the game is: " + catchRadius + "m");;
-        adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_checked, getIntent().getStringArrayListExtra("players")); // Ugly for now, doesn't show connected players at FIRST!
+        adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_checked, getIntent().getStringArrayListExtra("players")) {
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+
+                View view = super.getView(position, convertView, parent);
+                TextView text = (TextView) view.findViewById(android.R.id.text1);
+
+                text.setTextColor(Color.WHITE);
+
+                return view;
+            }
+        };
+
         playerList.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
         playerList.setEnabled(false);
         playerList.setAdapter(adapter);
-
         /*
          * Thread that updates Player list in the Game session
          * and displays them in the lobby. Currently updating every

@@ -16,18 +16,4 @@
         android:textSize="50dp"
         android:textColor="@color/White"/>
     />
-
-    <!--
-    <Button
-        android:id="@+id/skipButton"
-        android:background="@drawable/rulesbutton"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:text="Skip"
-        android:textAllCaps="false"
-        android:onClick="skipBtn"/>
-        -->
-
 </RelativeLayout>
